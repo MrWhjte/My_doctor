@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:my_doctor/screen/login.dart';
 
+import 'other/openFile.dart';
+
 
 void main()
 {
-    runApp(const MaterialApp(
+    runApp( const MaterialApp(
             home: SafeArea(
                 child: Scaffold(
-                    // appBar: AppBar(
-                    //     backgroundColor: Colors.blue,
-                    //     title: const Text('Demo App',
-                    //         style: TextStyle(
-                    //             color: Colors.white, fontWeight: FontWeight.w700))),
-                    body: Login())),
+                    body: OpenGallery())),
+                    // body: Login())),
             debugShowCheckedModeBanner: false));
 }
 
