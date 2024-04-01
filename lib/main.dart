@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_doctor/screen/login.dart';
-
 import 'other/openFile.dart';
+import 'other/scanQrcode.dart';
 
 
 void main()
