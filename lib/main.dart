@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
+import 'Auth/Login.dart';
+import 'Auth/signUp.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'other/openFile.dart';
-import 'other/scanQrcode.dart';
 
-
-void main()
+void main()async
 {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+    );
     runApp( const MaterialApp(
             home: SafeArea(
                 child: Scaffold(
-                    body: OpenGallery())),
-                    // body: Login())),
+                    // body: OpenGallery())),
+                    body: Login())),
             debugShowCheckedModeBanner: false));
 }
 
