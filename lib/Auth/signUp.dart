@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../other/openFile.dart';
+import 'package:my_doctor/Main_Function/openFile.dart';
 import '../values/app_style.dart';
 import 'Login.dart';
 
@@ -24,31 +24,32 @@ class _SignUpState extends State<SignUp>
     final TextEditingController _password = TextEditingController();
     final TextEditingController _passwordAgain = TextEditingController();
 
-    final _formkey = GlobalKey<FormState>();
     registration() async
     {
-        if (password.isNotEmpty && _nameUser.text!=""&& _email.text!="")
+        if (password.isEmpty ||  name.isEmpty || email.isEmpty ||passwordAgain.isEmpty)
         {
-            try
-            {
+            Fluttertoast.showToast(msg:'vui long nhap email và mat khau');
+        }else {
+            try {
                 await FirebaseAuth.instance
-                .createUserWithEmailAndPassword(email: email, password: password);
+                    .createUserWithEmailAndPassword(
+                    email: email, password: password);
                 Fluttertoast.showToast(msg: "Registered Successfully");
                 // ignore: use_build_context_synchronously
                 Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => const Login()));
-            } on FirebaseAuthException catch (e)
-            {
-                if (e.code == 'weak-password')
-                {
-                    Fluttertoast.showToast(msg: "Password Provided is too Weak");
-                } else if (e.code == "email-already-in-use")
-                {
+                    context,
+                    MaterialPageRoute(builder: (context) => const Login()));
+            } on FirebaseAuthException catch (e) {
+                if (e.code == 'weak-password') {
+                    Fluttertoast.showToast(
+                        msg: "Password Provided is too Weak");
+                } else if (e.code == "email-already-in-use") {
                     Fluttertoast.showToast(msg: "Account Already exists");
                 }
             }
         }
     }
+
     @override
     void dispose()
     {
@@ -224,7 +225,21 @@ class _SignUpState extends State<SignUp>
             child: ElevatedButton.icon(
                 onPressed: ()
                 {
-                    _signUp;
+                    setState(()
+                        {
+                            name= _nameUser.text;
+                            Fluttertoast.showToast(msg: name);
+
+                            email=_email.text;
+                            Fluttertoast.showToast(msg: email);
+
+                            password=_password.text;
+                            Fluttertoast.showToast(msg: password);
+
+                            passwordAgain=_passwordAgain.text;
+                            Fluttertoast.showToast(msg: passwordAgain);
+                        });
+                    registration();
                 },
                 icon: const Icon(Icons.near_me_sharp,
                     color: Colors.white),
@@ -249,18 +264,6 @@ class _SignUpState extends State<SignUp>
         MaterialPageRoute(builder: (context) => const Login())
     );
 
-    _signUp()
-    {
-      Fluttertoast.showToast(msg: 'check');
-            setState(()
-                {
-                    email=_email.text;
-                    name= _nameUser.text;
-                    password=_password.text;
-                    passwordAgain=_passwordAgain.text;
-                });
-            registration();
-    }
     _goToHome(BuildContext context) =>
     Navigator.push(
         context,

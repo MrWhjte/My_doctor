@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:my_doctor/Main_Function/splash_screen.dart';
+import 'package:my_doctor/screens/NavigationMenu.dart';
 import 'Auth/Login.dart';
+import 'Auth/Forgot_Password.dart';
 import 'Auth/signUp.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'other/openFile.dart';
+import 'package:my_doctor/Main_Function/openFile.dart';
 
 void main()async
 {
@@ -11,25 +15,11 @@ void main()async
     await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
     );
-    runApp( const MaterialApp(
+    runApp( const GetMaterialApp(
             home: SafeArea(
                 child: Scaffold(
-                    // body: OpenGallery())),
-                    body: Login())),
+                    // body: NavigationMenu())),
+                    body: Splash())),
             debugShowCheckedModeBanner: false));
 }
 
-// class DemoApp extends StatelessWidget
-// {
-//     const DemoApp({super.key});
-//
-//     @override
-//     Widget build(BuildContext context)
-//     {
-//         return Container(
-//             margin: const EdgeInsets.all(10),
-//             child: const Text('test',style: TextStyle(color: Colors.black,fontFamily: ,fontSize: 100))
-//         );
-//
-//     }
-// }
