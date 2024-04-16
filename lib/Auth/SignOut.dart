@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'Login.dart';
 
-
 class SignOutUser
 {
   final _auth= FirebaseAuth.instance;

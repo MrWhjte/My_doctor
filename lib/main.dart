@@ -7,7 +7,7 @@ import 'Auth/Forgot_Password.dart';
 import 'Auth/signUp.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:my_doctor/Main_Function/openFile.dart';
+import 'package:my_doctor/Main_Function/ScansScreen.dart';
 
 void main()async
 {
@@ -18,8 +18,8 @@ void main()async
     runApp( const GetMaterialApp(
             home: SafeArea(
                 child: Scaffold(
-                    // body: NavigationMenu())),
-                    body: Splash())),
+                    body: NavigationMenu())),
+                    // body: Splash())),
             debugShowCheckedModeBanner: false));
 }
 

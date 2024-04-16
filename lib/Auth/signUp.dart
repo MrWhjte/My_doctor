@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:my_doctor/Main_Function/openFile.dart';
+import 'package:my_doctor/Main_Function/ScansScreen.dart';
 import '../values/app_style.dart';
 import 'Login.dart';
 
@@ -267,7 +267,7 @@ class _SignUpState extends State<SignUp>
     _goToHome(BuildContext context) =>
     Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const OpenGallery())
+        MaterialPageRoute(builder: (context) => const ScansScreen())
     );
 }
 

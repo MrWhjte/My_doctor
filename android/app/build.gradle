@@ -55,7 +55,13 @@ android {
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation('com.squareup.okhttp3:okhttp:4.11.0')
 }
 flutter {
     source '../..'
+}
+configurations.all {
+    resolutionStrategy {
+        force 'com.squareup.okio:okio:1.17.5'
+    }
 }

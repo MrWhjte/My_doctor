@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:my_doctor/Auth/Login.dart';
-import 'package:my_doctor/Main_Function/openFile.dart';
+import 'package:my_doctor/Main_Function/ScansScreen.dart';
 
 class Splash extends StatefulWidget
 {

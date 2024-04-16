@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_doctor/Auth/signUp.dart';
 import '../screens/NavigationMenu.dart';
 import '../values/app_style.dart';
-import 'package:my_doctor/Main_Function/openFile.dart';
+import 'package:my_doctor/Main_Function/ScansScreen.dart';
 import 'Forgot_Password.dart';
 
 class Login extends StatefulWidget
@@ -47,7 +47,7 @@ class _LoginState extends State<Login>
                 Fluttertoast.showToast(
                     msg: "Login Successfully",
                     toastLength: Toast.LENGTH_SHORT,
-                    gravity: ToastGravity.CENTER,
+                    gravity: ToastGravity.BOTTOM,
                     timeInSecForIosWeb: 1,
                     backgroundColor: Colors.transparent,
                     textColor: Colors.white,

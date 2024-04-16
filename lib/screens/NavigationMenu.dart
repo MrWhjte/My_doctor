@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_doctor/Auth/Login.dart';
-import 'package:my_doctor/Main_Function/openFile.dart';
-import 'package:my_doctor/screens/proFile.dart';
+import 'package:my_doctor/Main_Function/ScansScreen.dart';
+import 'package:my_doctor/screens/Medicine.dart';
 import 'package:my_doctor/screens/setting.dart';
 import 'package:move_to_background/move_to_background.dart';
 
@@ -21,11 +21,11 @@ class NavigationMenu extends StatefulWidget
 
 class _NavigationMenuState extends State<NavigationMenu>
 {
-    int index=0;
+    int index=2;
     @override
     Widget build(BuildContext context)
     {
-      List<Widget> screens=const [HomeScreen(), Login(),OpenGallery(),Profile(),Setting()];
+      List<Widget> screens=const [HomeScreen(), Login(),ScansScreen(),Medicine(),Setting()];
         return PopScope(
           canPop: false,
           onPopInvoked: (bool didPop) async {
@@ -66,7 +66,7 @@ class _NavigationMenuState extends State<NavigationMenu>
                       ),
                       BottomNavigationBarItem(
                           icon: Icon(Icons.perm_identity),
-                          label: "Profile"
+                          label: "Medical"
                       ),
                       BottomNavigationBarItem(
                           icon: Icon(Icons.settings),
@@ -84,16 +84,16 @@ class _NavigationMenuState extends State<NavigationMenu>
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Thoát ứng dụng?'),
-            content: Text('Bạn có muốn thoát ứng dụng?'),
+            title: const Text('Exit app ?'),
+            content: const Text('Do you want to close app!'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text('Hủy'),
+                child: const Text('No'),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text('Thoát'),
+                child: const Text('Yes'),
               ),
             ],
           );
