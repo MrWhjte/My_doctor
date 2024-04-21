@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,7 +8,6 @@ import 'helper.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
-
 
 class ScansScreen extends StatefulWidget
 {
@@ -19,22 +19,21 @@ class ScansScreen extends StatefulWidget
 
 class _ScansScreenState extends State<ScansScreen>
 {
-  // String result = snapshot.data ?? "";
-  // String nameUser = Helper().getNameUser(result);
-
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  List<String> _listNameProduct =[];
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    List<String> _listNameProduct =[];
     File? getImage;
     @override
     Widget build(BuildContext context)
     {
         return Scaffold(
+
             floatingActionButton:
             Row(mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                     FloatingActionButton(
                         onPressed: ()
                         {
+                          _getImagesCamera();
                         },
                         child: const Icon(Icons.camera
                         ))
@@ -58,7 +57,7 @@ class _ScansScreenState extends State<ScansScreen>
                                     InkWell(
                                         onTap: ()
                                         {
-                                          _upLoadData(_listNameProduct);
+                                            _upLoadData(_listNameProduct);
                                         },
                                         child: Container(
                                             height: 50,
@@ -110,7 +109,7 @@ class _ScansScreenState extends State<ScansScreen>
                                                     style: TextStyle(
                                                         color: Colors.black,
                                                         fontWeight: FontWeight.w700,
-                                                        fontSize: 25)),
+                                                        fontSize: 25))
                                             ]
                                         ),
                                         _extractTextView()
@@ -145,7 +144,7 @@ class _ScansScreenState extends State<ScansScreen>
                     String result = snapshot.data ?? "";
                     String nameUser = Helper().getNameUser(result);
                     List<String> listNameProduct = Helper().getListNameProduct(result);
-                    _listNameProduct=listNameProduct;
+                    _listNameProduct = listNameProduct;
                     return SizedBox(
                         height: MediaQuery.of(context).size.height,
                         width: MediaQuery.of(context).size.width,
@@ -167,23 +166,23 @@ class _ScansScreenState extends State<ScansScreen>
                                             ),
                                             const SizedBox(height: 10),
                                             Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                const Text("Danh sách thuốc: ",
-                                                    style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontWeight: FontWeight.w700,
-                                                        fontSize: 20)),
-                                                InkWell(
-                                                    onTap: ()
-                                                    {
-                                                    },
-                                                    child: const Icon(Icons.add_circle_outline,size: 30,color: Colors.black)
-                                                )
-                                              ],
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                    const Text("Danh sách thuocc: ",
+                                                        style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontWeight: FontWeight.w700,
+                                                            fontSize: 20)),
+                                                    InkWell(
+                                                        onTap: ()
+                                                        {
+                                                        },
+                                                        child: const Icon(Icons.add_circle_outline,size: 30,color: Colors.black)
+                                                    )
+                                                ]
                                             ),
                                             const SizedBox(
-                                              height: 15,
+                                                height: 15
                                             ),
                                             Expanded(
                                                 child: ListView.builder(
@@ -191,20 +190,22 @@ class _ScansScreenState extends State<ScansScreen>
                                                     itemBuilder: (context, index)
                                                     {
                                                         return Container(
-                                                          padding: const EdgeInsets.only(right: 15,left: 15,top: 5),
-                                                          child: Row(
-                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                            children: [
-                                                              Text(
-                                                                  "${index + 1}. ${listNameProduct[index]}",
-                                                                  style: const TextStyle(fontSize: 20)
-                                                              ),
-                                                              InkWell(
-                                                                onTap: (){},
-                                                                child: const Icon(Icons.edit),
-                                                              ),
-                                                            ],
-                                                          ),
+                                                            padding: const EdgeInsets.only(right: 15,left: 15,top: 5),
+                                                            child: Row(
+                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                children: [
+                                                                    Text(
+                                                                        "${index + 1}. ${listNameProduct[index]}",
+                                                                        style: const TextStyle(fontSize: 20)
+                                                                    ),
+                                                                    InkWell(
+                                                                        onTap: ()
+                                                                        {
+                                                                        },
+                                                                        child: const Icon(Icons.edit)
+                                                                    )
+                                                                ]
+                                                            )
                                                         );
                                                     }
                                                 )
@@ -234,38 +235,86 @@ class _ScansScreenState extends State<ScansScreen>
                 getImage = File(getimg!.path);
             });
     }
+    Future _getImagesCamera() async
+    {
+        var getimg = await ImagePicker().pickImage(source: ImageSource.camera);
+        setState(()
+            {
+                getImage = File(getimg!.path);
+            });
+    }
     Widget setText(String text, {Color? color, double? fontSize})
     {
         return Text(text,
             style: TextStyle(color: Colors.black, fontSize: fontSize));
     }
-  Future<void> _upLoadData(List<String> medicineList) async {
-      if(medicineList.isEmpty){
-        Fluttertoast.showToast(msg: 'Data is empty');
-        return;
+
+
+    Future<void> _upLoadData(List<String> medicineList) async
+    {
+        if(medicineList.isEmpty)
+        {
+            Fluttertoast.showToast(msg: 'Data is empty');
+            return;
+        }
+        String idUser= await getUserID();
+        String emailUser = await getUserEmail();
+        if(idUser.isEmpty || emailUser.isEmpty)
+        {
+            Fluttertoast.showToast(msg: 'Have error');
+        }
+        DatabaseReference databaseReference = FirebaseDatabase.instance.ref(idUser);
+        var invoiceRef = databaseReference.child("Invoices");
+        var time = DateTime.now().toString();
+        var id=generateIdWithPrefix(5);
+        Map<String, dynamic> invoiceData = {
+          'id': id,
+          'time': time,
+          'name': {},
+        };
+        for (int i=0;i < medicineList.length;i++)
+        {
+            invoiceData['name']['${i+1}'] = medicineList[i];
+        }
+        await invoiceRef.child(id).set(invoiceData);
+        Fluttertoast.showToast(msg: 'Add success!');
+        setState(()
+            {
+                getImage = null;
+            });
+    }
+
+    Future<String> getUserID() async
+    {
+        final User? user = auth.currentUser;
+        if (user != null)
+        {
+            return user.uid;
+        } else
+        {
+            Fluttertoast.showToast(msg: 'login to continue');
+            return "";
+
+        }
+    }
+    Future<String> getUserEmail() async
+    {
+        final User? user = auth.currentUser;
+        if (user != null)
+        {
+            return user.email.toString();
+        } else
+        {
+            Fluttertoast.showToast(msg: 'login to continue');
+            return "";
+        }
+    }
+    String generateIdWithPrefix(int length) {
+      Random random = Random();
+      String id = '';
+      for (int i = 0; i < length; i++) {
+        id += random.nextInt(10).toString();
       }
-   String id= await getUserID();
-   DatabaseReference databaseReference  =FirebaseDatabase.instance.ref(id);
-    for (String medicineName in medicineList) {
-      Map<String, dynamic> medicineInfo = {
-        'name': medicineName};
-      await databaseReference.child("NameMedicine").set(medicineInfo);
+      return id;
     }
-   Fluttertoast.showToast(msg: 'Thuốc đã được thêm thành công!');
-   setState(()
-   {
-     getImage = null;
-   });
-  }
-
-  Future<String> getUserID() async {
-    final User? user = auth.currentUser;
-    if (user != null) {
-      return user.uid;
-    } else {
-      Fluttertoast.showToast(msg: 'login to continue');
-      return "";
-
-    }
-  }
 }

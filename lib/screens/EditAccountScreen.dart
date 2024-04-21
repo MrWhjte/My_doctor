@@ -18,6 +18,7 @@ class _EditAccountScreenState extends State<EditAccountScreen>
 {
     String gender = "man";
     File? getImage;
+    
 
     @override
     Widget build(BuildContext context)
