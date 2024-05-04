@@ -12,7 +12,8 @@ class EditItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
           flex: 2,
@@ -20,13 +21,13 @@ class EditItem extends StatelessWidget {
             title,
             style: const TextStyle(
               fontSize: 18,
-              color: Colors.grey,
+              color: Colors.black,
             ),
           ),
         ),
-        const SizedBox(width: 40),
+        const SizedBox(width: 20),
         Expanded(
-          flex: 5,
+          flex: 7,
           child: widget,
         )
       ],

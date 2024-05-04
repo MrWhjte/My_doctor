@@ -1,10 +1,15 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:my_doctor/screens/setting.dart';
 
 import '../Main_Function/EditItem.dart';
+import 'NavigationMenu.dart';
 
 class EditAccountScreen extends StatefulWidget
 {
@@ -16,10 +21,28 @@ class EditAccountScreen extends StatefulWidget
 
 class _EditAccountScreenState extends State<EditAccountScreen>
 {
+  final FirebaseAuth auth = FirebaseAuth.instance;
+    String  email ="";
     String gender = "man";
-    File? getImage;
-    
-
+    File? imageAvatar;
+    final _nameController = TextEditingController();
+    final _ageController = TextEditingController();
+    final _phoneController = TextEditingController();
+    final _emailController = TextEditingController();
+    @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadEmail();
+  }
+@override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _nameController.dispose();
+    _ageController.dispose() ;
+    _phoneController.dispose();
+  }
     @override
     Widget build(BuildContext context)
     {
@@ -28,7 +51,7 @@ class _EditAccountScreenState extends State<EditAccountScreen>
                 leading: IconButton(
                     onPressed: ()
                     {
-                        Navigator.pop(context);
+                      Navigator.pop(context);
                     },
                     icon: const Icon(Icons.arrow_back_ios_outlined)
                 ),
@@ -39,7 +62,7 @@ class _EditAccountScreenState extends State<EditAccountScreen>
                         child: IconButton(
                             onPressed: ()
                             {
-                              Fluttertoast.showToast(msg: 'success');
+                              uploadUserProfile();
                             },
                             style: IconButton.styleFrom(
                                 backgroundColor: Colors.lightBlueAccent,
@@ -61,7 +84,7 @@ class _EditAccountScreenState extends State<EditAccountScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                             const Text(
-                                "Account",
+                                "Edit Account",
                                 style: TextStyle(
                                     fontSize: 36,
                                     fontWeight: FontWeight.bold
@@ -72,13 +95,13 @@ class _EditAccountScreenState extends State<EditAccountScreen>
                                 title: "Photo",
                                 widget: Column(
                                     children: [
-                                        getImage != null
+                                        imageAvatar != null
                                         ?SizedBox(
                                           height: 100,
                                           width: 100,
                                           child: ClipOval(
                                               child: Image.file(
-                                              getImage!,
+                                              imageAvatar!,
                                                 fit: BoxFit.cover, // Cover the entire area
                                               ),
                                           ),
@@ -102,9 +125,9 @@ class _EditAccountScreenState extends State<EditAccountScreen>
                                     ]
                                 )
                             ),
-                            const EditItem(
+                             EditItem(
                                 title: "Name",
-                                widget: TextField()
+                                widget: TextFormField(controller: _nameController,)
                             ),
                             const SizedBox(height: 40),
                             EditItem(
@@ -155,15 +178,20 @@ class _EditAccountScreenState extends State<EditAccountScreen>
                                     ]
                                 )
                             ),
-                            const SizedBox(height: 40),
-                            const EditItem(
-                                widget: TextField(),
+                            const SizedBox(height: 20),
+                             EditItem(
+                                widget: TextFormField(controller: _ageController,),
                                 title: "Age"
                             ),
-                            const SizedBox(height: 40),
-                            const EditItem(
-                                widget: TextField(),
+                            const SizedBox(height: 20),
+                             EditItem(
+                                widget: TextFormField(controller: _emailController,enabled: false,),
                                 title: "Email"
+                            ),
+                          const SizedBox(height: 20),
+                             EditItem(
+                                widget: TextFormField(controller: _phoneController,),
+                                title: "Phone"
                             )
                         ]
                     )
@@ -171,12 +199,108 @@ class _EditAccountScreenState extends State<EditAccountScreen>
             )
         );
     }
+
+    Future<void> uploadUserProfile() async
+    {
+      String idUser = await getUserID();
+      if(idUser.isEmpty)
+      {
+        Fluttertoast.showToast(msg: 'Have error');
+      }
+      //
+      // if( _nameController.text.isEmpty |gender.isEmpty|_ageController.text.isEmpty|_phoneController.text.isEmpty){
+      //   Fluttertoast.showToast(msg: "vui lòng nhập đầy đủ thông tin");
+      //   return;
+      // }
+
+      String imageUrl = "";
+      if (imageAvatar != null) {
+        imageUrl = await uploadImageToFirebaseStorage(imageAvatar!);
+        if (imageUrl.isEmpty) {
+          Fluttertoast.showToast(msg: 'Failed to upload image.');
+          return;
+        }
+      }
+      DatabaseReference databaseReference = FirebaseDatabase.instance.ref(idUser);
+      var invoiceRef = databaseReference.child("Profile");
+      Map<String, dynamic> invoiceData = {
+        'Name': _nameController.text,
+        'Gender': gender,
+        'Age': _ageController.text,
+        'Phone': _phoneController.text,
+        'Avatar':imageUrl,
+      };
+      await invoiceRef.set(invoiceData);
+      _nameController.text="";
+      _ageController.text="";
+      _phoneController.text="";
+      imageAvatar=null;
+        goto();
+      Fluttertoast.showToast(msg: 'Add success!');
+    }
+
+void goto(){
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) =>  const NavigationMenu(index: 4,),
+    ),
+  );
+}
+
+    Future<String> getUserID() async
+    {
+      final User? user = auth.currentUser;
+      if (user != null)
+      {
+        return user.uid;
+      } else
+      {
+        Fluttertoast.showToast(msg: 'login to continue');
+        return "";
+
+      }
+    }
+    Future<String> getUserEmail() async
+    {
+      final User? user = auth.currentUser;
+      if (user != null)
+      {
+        return user.email.toString();
+      } else
+      {
+        Fluttertoast.showToast(msg: 'login to continue');
+        return "";
+      }
+    }
+
     Future _getImages() async
     {
         var getimg = await ImagePicker().pickImage(source: ImageSource.gallery);
         setState(()
             {
-              getImage = File(getimg!.path);
+              imageAvatar = File(getimg!.path);
             });
     }
+
+  void loadEmail() async{
+    String emailUser = await getUserEmail();
+      setState(() {
+        email = emailUser;
+        _emailController.text = email;
+      });
+  }
+
+  Future<String> uploadImageToFirebaseStorage(File imageFile) async {
+    String idUser = await getUserID();
+    if(idUser.isEmpty)
+    {
+      Fluttertoast.showToast(msg: 'Have error');
+    }
+    final userProfileImageRef = FirebaseStorage.instance.ref(idUser).child('Avatars').child('avatar.jpg');
+      await userProfileImageRef.putFile(imageFile);
+      final imageUrl = await userProfileImageRef.getDownloadURL();
+      debugPrint(imageUrl.toString());
+      return imageUrl;
+  }
 }

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:my_doctor/FuncHomeScreen/Map.dart';
+import 'package:my_doctor/FuncHomeScreen/abc.dart';
 
 class HomeScreen extends StatefulWidget
 {
@@ -11,12 +15,12 @@ class HomeScreen extends StatefulWidget
 class _HomeScreenState extends State<HomeScreen>
 {
     List catNames = [
-        'Category',
+        'Categor',
         'Classes',
         'Free Course',
         'BookStore',
         'Live Course',
-        'LeaderBoard'
+        'Tra cứu thông tin quầy bán',
     ];
     List<Color> catColor = const [
         Color(0xFFFFCF2F),
@@ -32,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen>
         Icon(Icons.assessment, color: Colors.white, size: 50),
         Icon(Icons.store, color: Colors.white, size: 50),
         Icon(Icons.play_circle_fill, color: Colors.white, size: 50),
-        Icon(Icons.emoji_events, color: Colors.white, size: 50)
+        Icon(Icons.location_on, color: Colors.white, size: 50)
     ];
 
     @override
@@ -68,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen>
                                             letterSpacing: 1,
                                             wordSpacing: 2))),
                                 Container(
-                                    margin: EdgeInsets.only(top: 5, bottom: 20),
+                                    margin: const EdgeInsets.only(top: 5, bottom: 20),
                                     width: MediaQuery.of(context).size.width,
                                     height: 55,
                                     alignment: Alignment.center,
@@ -83,7 +87,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                 color: Colors.black.withOpacity(0.5),
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 20),
-                                            prefixIcon: Icon(Icons.search, size: 30))))
+                                            prefixIcon: const Icon(Icons.search, size: 30)))
+                                )
                             ])),
                     Padding(
                         padding: const EdgeInsets.only(top: 20, right: 15, left: 15),
@@ -93,33 +98,47 @@ class _HomeScreenState extends State<HomeScreen>
                                     shrinkWrap: true,
                                     physics: const NeverScrollableScrollPhysics(),
                                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 3, childAspectRatio: 1.1),
+                                        crossAxisCount: 3,crossAxisSpacing: 3,
+                                        mainAxisSpacing: 10,),
                                     itemBuilder: (BuildContext context, int index)
                                     {
-                                        return Column(children: [
-                                                Container(
-                                                    height: 70,
-                                                    width: 70,
-                                                    decoration: BoxDecoration(
-                                                        color: catColor[index], shape: BoxShape.circle),
-                                                    child: Center(child: catIcon[index])),
-                                                const SizedBox(height: 10),
-                                                Text(
-                                                    catNames[index],
-                                                    style: const TextStyle(
-                                                        color: Colors.black,
-                                                        fontWeight: FontWeight.w400,
-                                                        fontSize: 16)
-                                                )
-                                            ]);
-                                    }),
-                          const Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                             Text('Functions',style: TextStyle(color: Colors.black,fontSize: 25,fontWeight: FontWeight.w600)),
-                              Text('Show all',style: TextStyle(color: Colors.blue,fontSize: 18,fontWeight: FontWeight.w500)),
-                            ],
-                          )
+                                        return  Column(
+                                              children: [
+                                                  InkWell(
+                                                      onTap: ()
+                                                      {
+                                                        forwardCat(index);
+                                                      },
+                                                      child: Container(
+                                                          height: 70,
+                                                          width: 70,
+                                                          decoration: BoxDecoration(
+                                                              color: catColor[index], shape: BoxShape.circle),
+                                                          child: Center(child: catIcon[index]))
+                                                  ),
+                                                  const SizedBox(height: 10),
+                                                  Expanded(
+                                                    child: Text(
+                                                        catNames[index],
+                                                        style: const TextStyle(
+                                                            color: Colors.black,
+                                                            fontWeight: FontWeight.w400,
+                                                            fontSize: 16),
+                                                      textAlign: TextAlign.center,
+                                                    ),
+                                                  )
+                                              ]
+                                          );
+                                        
+                                    }
+                                ),
+                                const Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                        Text('Functions',style: TextStyle(color: Colors.black,fontSize: 25,fontWeight: FontWeight.w600)),
+                                        Text('Show all',style: TextStyle(color: Colors.blue,fontSize: 18,fontWeight: FontWeight.w500))
+                                    ]
+                                )
                             ]
                         )
                     )
@@ -128,4 +147,14 @@ class _HomeScreenState extends State<HomeScreen>
         )
         ;
     }
+
+  void forwardCat(int key) {
+    switch (key) {
+      case 5:
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const map()));
+        break;
+    }
+
+  }
 }

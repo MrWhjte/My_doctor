@@ -1,8 +1,4 @@
-
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:my_doctor/Auth/Login.dart';
 import 'package:my_doctor/Main_Function/ScansScreen.dart';
 import 'package:my_doctor/screens/Medicine.dart';
@@ -13,7 +9,8 @@ import 'home.dart';
 
 class NavigationMenu extends StatefulWidget
 {
-    const NavigationMenu({super.key});
+  final int index;
+    const NavigationMenu({super.key,required this.index});
 
     @override
     State<NavigationMenu> createState() => _NavigationMenuState();
@@ -21,7 +18,14 @@ class NavigationMenu extends StatefulWidget
 
 class _NavigationMenuState extends State<NavigationMenu>
 {
-    int index=2;
+  late  int indexKey=4;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    indexKey=widget.index;
+  }
     @override
     Widget build(BuildContext context)
     {
@@ -38,18 +42,18 @@ class _NavigationMenuState extends State<NavigationMenu>
             }
           },
           child: Scaffold(
-              body: screens[index],
+              body: screens[indexKey],
               bottomNavigationBar: BottomNavigationBar(
                   type: BottomNavigationBarType.fixed,
                   backgroundColor: Colors.white,
                   unselectedItemColor: Colors.black,
                   selectedItemColor: Colors.green,
-                  currentIndex: index,
+                  currentIndex: indexKey,
                   onTap: (value)=>
                   {
                       setState(()
                           {
-                              index = value;
+                              indexKey = value;
                           }),
                   },
                   items: const [
@@ -74,7 +78,6 @@ class _NavigationMenuState extends State<NavigationMenu>
                       )
                   ]
               )
-
           ),
         );
     }

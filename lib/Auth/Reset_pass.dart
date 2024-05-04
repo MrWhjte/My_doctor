@@ -88,6 +88,8 @@ class _ForgotPasswordState extends State<ForgotPassword>
                                 const SizedBox(height: 10),
                                 _btnRsPass(),
                                 const SizedBox(height: 10),
+                                _signUpText(),
+                                const SizedBox(height: 10),
                                 const Text('Or Login with',style: TextStyle(color: Colors.white,fontSize: 18)),
                                 const SizedBox(height: 10),
                                 _anotherLogin()
@@ -170,6 +172,22 @@ class _ForgotPasswordState extends State<ForgotPassword>
         MaterialPageRoute(builder: (context) => const SignUp())
     );
 
+    Widget _signUpText()
+    {
+      return
+        Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("I remembered my password ",
+                  style: TextStyle(fontSize: 15, color: Colors.white)),
+              InkWell(
+                  onTap: () => _goToLogIn(context),
+                  child: const Text(
+                      "Login", style: TextStyle(color: Colors.red, fontSize: 15))
+              )
+            ]
+        );
+    }
     Widget _anotherLogin()
     {
         return Center(
@@ -183,4 +201,10 @@ class _ForgotPasswordState extends State<ForgotPassword>
             )
         );
     }
+
+    _goToLogIn(BuildContext context) =>
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const Login())
+        );
 }
