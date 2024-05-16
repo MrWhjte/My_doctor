@@ -18,12 +18,14 @@ class ShowDetailMedicine extends StatefulWidget {
 class _ShowDetailMedicineState extends State<ShowDetailMedicine> {
   late Map<dynamic, dynamic> invoiceData = {};
   String? idUser;
+  String lieu='';
   String? idHoaDon;
   String time="";
   final FirebaseAuth auth = FirebaseAuth.instance;
   DatabaseReference? ref;
   bool isLoadIdUser = false;
-  List<String> medicines = [];
+  List<Map<String, dynamic>> medicines = [];
+
 
   @override
   void initState() {
@@ -40,6 +42,8 @@ class _ShowDetailMedicineState extends State<ShowDetailMedicine> {
   @override
   Widget build(BuildContext context) {
     time = invoiceData['time'];
+    lieu = invoiceData['lieu'];
+    lieu.isEmpty?"":lieu;
     DateTime dateTime = DateTime.parse(time);
     String formattedDateTime =
         DateFormat('dd-MM-yyyy – hh:mm a').format(dateTime);
@@ -105,6 +109,11 @@ class _ShowDetailMedicineState extends State<ShowDetailMedicine> {
                           TextStyle(color: Colors.black,
                               fontWeight: FontWeight.w500,
                               fontSize: 20)),
+                       Text("Số lượng liều thuốc: $lieu",
+                          style:
+                          const TextStyle(color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 20)),
                       Expanded(child: showText())
                     ],
                   ),
@@ -116,31 +125,74 @@ class _ShowDetailMedicineState extends State<ShowDetailMedicine> {
     );
   }
   Widget showText() {
-    medicines = parseMedicineList(invoiceData["name"]);
     return Column(
       children: [
         Expanded(
             child: ListView.builder(
-                itemCount: medicines.length, // S? l??ng items trong danh sách
+                itemCount: medicines.length,
                 itemBuilder: (context, index) {
-                  return Container(
-                      padding: const EdgeInsets.only(
-                          right: 15, left: 15, top: 5),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  return Column(
+                    children: [
+                      Container(
+                          padding: const EdgeInsets.only(
+                              right: 5, top: 5),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                    Expanded(
+                                      child: Text(
+                                          "${index + 1}. ${medicines[index]['name']}",
+                                          style: const TextStyle(fontSize: 20)
+                                      ),
+                                    ),
+                                InkWell(
+                                    onTap: () {
+                                      Fluttertoast.showToast(msg: "${medicines[index]} ");
+                                    },
+                                    child: const Icon(Icons.search)
+                                )
+                              ]
+                          )
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 30,top: 5),
+                        child: Row(
                           children: [
+                            const Text('Cách dùng :',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w400)),
                             Text(
-                                "${index + 1}. ${medicines[index]}",
-                                style: const TextStyle(fontSize: 20)
+                              medicines[index]['use'].isNotEmpty
+                                  ?  medicines[index]['use']
+                                  : ' Không có',
+                              style:
+                              const TextStyle(color: Color(0xf3ff6302),fontSize: 20),
                             ),
-                            InkWell(
-                                onTap: () {
-                                  Fluttertoast.showToast(msg: "${medicines[index]} ");
-                                },
-                                child: const Icon(Icons.search)
-                            )
-                          ]
-                      )
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 30,top: 5),
+                        child: Row(
+                          children: [
+                            const Text('Giờ uống :',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w400)),
+                            Text(
+                              medicines[index]['time'].isNotEmpty
+                                  ?  medicines[index]['time']
+                                  : ' Không có',
+                              style:
+                              const TextStyle(color:  Color(0xf3ff6302),fontSize: 20),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   );
                 }
             )
@@ -163,21 +215,37 @@ class _ShowDetailMedicineState extends State<ShowDetailMedicine> {
     if (snapshot.exists) {
       setState(() {
         invoiceData = snapshot.value as Map<dynamic, dynamic>;
+        medicines = parseMedicineList(invoiceData["name"]);
+        debugPrint(medicines.toString());
       });
     } else {
       Fluttertoast.showToast(msg: "No data found.");
     }
   }
 
-  List<String> parseMedicineList(List<Object?> inputList) {
-    List<String> validMedicines = [];
-
-    for (var item in inputList) {
-      if (item != null && item is String && item.toLowerCase() != 'null') {
-        validMedicines.add(item.trim());
+  // List<String> parseMedicineList(List<Object?> inputList) {
+  //   List<String> validMedicines = [];
+  //
+  //   for (var item in inputList) {
+  //     if (item != null && item is String && item.toLowerCase() != 'null') {
+  //       validMedicines.add(item.trim());
+  //     }
+  //   }
+  //   return validMedicines;
+  // }
+  List<Map<String, dynamic>> parseMedicineList(Map<dynamic, dynamic> inputMap) {
+    List<Map<String, dynamic>> medicines = [];
+    inputMap.forEach((key, value) {
+      if (value is Map) {
+        Map<String, dynamic> medicineDetails = {
+          'name': key,
+          'use': value['use'] ?? '',
+          'time': value['time'] ?? ''
+        };
+        medicines.add(medicineDetails);
       }
-    }
-    return validMedicines;
+    });
+    return medicines;
   }
 }
 

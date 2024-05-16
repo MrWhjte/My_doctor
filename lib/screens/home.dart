@@ -15,19 +15,19 @@ class HomeScreen extends StatefulWidget
 class _HomeScreenState extends State<HomeScreen>
 {
     List catNames = [
-        'Categor',
+        'Theo dõi sức khoẻ',
         'Classes',
         'Free Course',
-        'BookStore',
-        'Live Course',
-        'Tra cứu thông tin quầy bán',
+        'Theo dõi sức khoẻ',
+        'Góp ý, khiếu nại',
+        'Tìm địa điểm nhà thuốc',
     ];
     List<Color> catColor = const [
         Color(0xFFFFCF2F),
         Color(0xFF6FEe8D),
         Color(0xFF61BDFD),
-        Color(0xFFFC7F7F),
         Color(0xFFCB84FB),
+        Color(0xFFFC7F7F),
         Color(0xFF78E667)
     ];
     List<Icon> catIcon = const [
@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen>
         Icon(Icons.video_library, color: Colors.white, size: 50),
         Icon(Icons.assessment, color: Colors.white, size: 50),
         Icon(Icons.store, color: Colors.white, size: 50),
-        Icon(Icons.play_circle_fill, color: Colors.white, size: 50),
+        Icon(Icons.feedback_rounded, color: Colors.white, size: 50),
         Icon(Icons.location_on, color: Colors.white, size: 50)
     ];
 
@@ -43,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen>
     Widget build(BuildContext context)
     {
         return Scaffold(
+            resizeToAvoidBottomInset: false,
             body: ListView(
                 children: [
                     Container(
@@ -123,22 +124,15 @@ class _HomeScreenState extends State<HomeScreen>
                                                         style: const TextStyle(
                                                             color: Colors.black,
                                                             fontWeight: FontWeight.w400,
-                                                            fontSize: 16),
+                                                            fontSize: 15),
                                                       textAlign: TextAlign.center,
                                                     ),
                                                   )
                                               ]
                                           );
-                                        
+
                                     }
                                 ),
-                                const Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                        Text('Functions',style: TextStyle(color: Colors.black,fontSize: 25,fontWeight: FontWeight.w600)),
-                                        Text('Show all',style: TextStyle(color: Colors.blue,fontSize: 18,fontWeight: FontWeight.w500))
-                                    ]
-                                )
                             ]
                         )
                     )

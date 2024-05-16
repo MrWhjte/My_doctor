@@ -20,4 +20,9 @@ const List<String> unwantedWords = [
   'tui',
   "Tuýp",
   "Pham",
+  "Sang",
+  "chieu",
+  "vien",
+  "Sau",
+  "Viên"
 ];

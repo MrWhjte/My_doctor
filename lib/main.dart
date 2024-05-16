@@ -18,6 +18,7 @@ void main()async
     runApp( const GetMaterialApp(
             home: SafeArea(
                 child: Scaffold(
+                    resizeToAvoidBottomInset: false,
                     body: NavigationMenu(index: 0,))),
                     // body: Splash())),
             debugShowCheckedModeBanner: false));
