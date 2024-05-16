@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:my_doctor/Auth/Login.dart';
 import 'package:my_doctor/Main_Function/ScansScreen.dart';
 import 'package:my_doctor/screens/Medicine.dart';
+import 'package:my_doctor/screens/GetTime.dart';
 import 'package:my_doctor/screens/setting.dart';
 import 'package:move_to_background/move_to_background.dart';
 
+import 'calendarScreen.dart';
 import 'home.dart';
 
 class NavigationMenu extends StatefulWidget
@@ -29,7 +31,7 @@ class _NavigationMenuState extends State<NavigationMenu>
     @override
     Widget build(BuildContext context)
     {
-      List<Widget> screens=const [HomeScreen(), Login(),ScansScreen(),Medicine(),Setting()];
+      List<Widget> screens=const [HomeScreen(), Calendar(),ScansScreen(),Medicine(),Setting()];
         return PopScope(
           canPop: false,
           onPopInvoked: (bool didPop) async {
@@ -42,6 +44,7 @@ class _NavigationMenuState extends State<NavigationMenu>
             }
           },
           child: Scaffold(
+            resizeToAvoidBottomInset: false,
               body: screens[indexKey],
               bottomNavigationBar: BottomNavigationBar(
                   type: BottomNavigationBarType.fixed,

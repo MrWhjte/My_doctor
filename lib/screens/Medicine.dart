@@ -123,7 +123,7 @@ class _MedicineState extends State<Medicine> {
       for (var snapshot in event.snapshot.children) {
         dataList.add({
           'id': snapshot.key,
-          'time': DateTime.parse(snapshot.child('time').value.toString())
+          'time': DateTime.parse(snapshot.child('timeUp').value.toString())
         });
       }
       _sortDataList(dataList);

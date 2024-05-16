@@ -24,12 +24,6 @@ class Helper {
           openParenthesisIndex + head.length, closeParenthesisIndex);
       // Xử lý trường hợp có xuống dòng
       textInParentheses = textInParentheses.replaceAll('\n', ' ').trim();
-      // String formattedNumericPart = textInParentheses.replaceAllMapped(
-      //   RegExp(r'[1i|]'),
-      //   (match) => '1',
-      // );
-      // textInParentheses = formattedNumericPart;
-      // debugPrint(textInParentheses);
       return textInParentheses;
     } else {
       return 'No find result'; // Không tìm thấy dấu ngoặc đơn
@@ -110,9 +104,21 @@ class Helper {
     final name = nameMatch?.group(0);
     return name.toString();
   }
-  List<String> splitProduct(String input){
-    // input là chuõi đã được lọc kí tự gây nhiễu
-    String pattern = r'\b\d{1,3}(,\d{3})+\b|\b\d{4,}\b';
+  String getLieuThuoc(String dataRss) {
+    final nameRegex = RegExp(r'\d+\s*Liều');
+    final nameMatch = nameRegex.firstMatch(dataRss);
+    final name = nameMatch?.group(0);
+    if(name == null){
+      return '0';
+    }
+    final numRegex = RegExp(r'\d');
+    final numMatch = numRegex.firstMatch(dataRss);
+    final num = numMatch?.group(0);
+    return num.toString();
+  }
+
+List<String> splitProduct(String input){
+  String pattern = r'\b\d{1,3}(,\d{3})+\b|\b\d{4,}\b|(?<=\b\d+V\s+|\b\d+X\d+\s+)(?=[A-Z])';
     RegExp exp = RegExp(pattern);
     List<String> parts = input.split(exp);
     List<String> drugNames = [];
@@ -120,7 +126,7 @@ class Helper {
       drugNames.add(part.trim());
     }
     for (var element in drugNames) {
-      debugPrint(element);
+      // debugPrint(element);
     }return drugNames;
   }
 }

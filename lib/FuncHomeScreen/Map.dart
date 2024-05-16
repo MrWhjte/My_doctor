@@ -1,11 +1,15 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class map extends StatefulWidget {
   const map({super.key});
@@ -17,6 +21,7 @@ class map extends StatefulWidget {
 class _mapState extends State<map> {
   late List<Map<String, dynamic>> dataListLocal = [];
   DatabaseReference? dbRef;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -31,6 +36,8 @@ class _mapState extends State<map> {
 
   String? selectedProvince;
   String? selectedDistrict;
+  String currentLocationUser = "Press the button to get the location";
+  bool isLoadMap = false;
 
   List<String> provinces = [];
   List<String> district = [];
@@ -127,7 +134,7 @@ class _mapState extends State<map> {
       case 0:
         return find();
       case 1:
-        return near();
+        return getLocationFromGPS();
       default:
         return const Text('Tab khan xác định');
     }
@@ -214,7 +221,7 @@ class _mapState extends State<map> {
     );
   }
 
-  Widget LoadLocation(String location) {
+  Widget loadLocation(String location) {
     return Card(
         color: Colors.white,
         shape: const RoundedRectangleBorder(
@@ -223,20 +230,30 @@ class _mapState extends State<map> {
             width: MediaQuery.of(context).size.width,
             height: 90,
             child: InkWell(
-                onTap: () {
-                  Fluttertoast.showToast(msg: location);
+                onTap: () async {
+                  final encodedLocation = Uri.encodeComponent(location);
+                  final googleMapsUrl = 'comgooglemaps://?center=$encodedLocation&zoom=14';
+                  if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
+                  await launchUrl(Uri.parse(googleMapsUrl));
+                  return; // Exit the onTap function if Google Maps opens
+                  }
+                  // Fallback to web map if Google Maps app is unavailable
+                  final webMapUrl = 'https://www.google.com/maps/search/?api=1&query=$encodedLocation';
+                  await launchUrl(Uri.parse(webMapUrl));
                 },
                 child: Padding(
                     padding:
                         const EdgeInsets.only(top: 25, left: 25, right: 30),
-                    child: Column(
+                    child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(location,
-                              style: const TextStyle(
-                                  color: Colors.black, fontSize: 18),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis),
+                          Expanded(
+                            child: Text(location,
+                                style: const TextStyle(
+                                    color: Colors.black, fontSize: 18),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis),
+                          ),
                         ])))));
   }
 
@@ -244,60 +261,7 @@ class _mapState extends State<map> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(right: 10, left: 10, top: 15),
-          child: Container(
-              margin: const EdgeInsets.only(top: 5, bottom: 20),
-              width: MediaQuery.of(context).size.width,
-              height: 55,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(10)),
-              child: TextFormField(
-                  textAlign: TextAlign.start,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30)),
-                    hintText: "Tìm theo tỉnh thành",
-                    hintStyle: TextStyle(
-                        color: Colors.black.withOpacity(0.5),
-                        fontWeight: FontWeight.w400,
-                        fontSize: 20),
-                    prefixIcon: const Icon(Icons.search, size: 30),
-                    contentPadding: EdgeInsets.fromLTRB(20, 5, 20, 20),
-                    alignLabelWithHint: true,
-                  ))),
-        ),
-        Row(
-          children: [
-            Container(
-              height: 30,
-              width: 190,
-              child: const Divider(
-                color: Colors.black,
-                height: 20,
-                thickness: 0.5,
-                indent: 30,
-                endIndent: 5,
-              ),
-            ),
-            Container(
-              child: Text("Hoặc"),
-            ),
-            Container(
-              height: 30,
-              width: 190,
-              child: const Divider(
-                color: Colors.black,
-                height: 20,
-                thickness: 0.5,
-                indent: 5,
-                endIndent: 20,
-              ),
-            ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.only(left: 16,right: 16,top: 30),
           child: Column(
             children: [
               DropdownButtonFormField<String>(
@@ -345,7 +309,7 @@ class _mapState extends State<map> {
                   setState(() {
                     selectedDistrict = newValue;
                     getLoadLocation(
-                        province: selectedProvince, district: selectedDistrict);
+                        province: selectedProvince, district: newValue);
                   });
                 },
                 items: district.map<DropdownMenuItem<String>>((String value) {
@@ -362,7 +326,9 @@ class _mapState extends State<map> {
           ),
         ),
         Expanded(
-          child: dbRef == null || selectedDistrict == null
+          child: isLoading
+              ? const Center(child: CircularProgressIndicator()) // Hiển thị spinner khi đang tải
+              :  dbRef == null || selectedDistrict == null
               ? const Center(
                   child: Text(
                     "Chọn địa chỉ để hiện thị vị trí",
@@ -387,50 +353,17 @@ class _mapState extends State<map> {
                         return Padding(
                             padding: const EdgeInsets.only(top: 5.0),
                             child:
-                                LoadLocation(dataListLocal[index]['location']));
+                                loadLocation(dataListLocal[index]['location']));
                       }),
         )
       ],
     );
   }
 
-  Widget near() {
-    return Center(
-      child: Container(
-        child: Row(
-          children: [
-            Container(
-              height: 30,
-              width: 190,
-              child: const Divider(
-                color: Colors.black,
-                height: 20,
-                thickness: 1,
-                indent: 10,
-                endIndent: 5,
-              ),
-            ),
-            Container(
-              child: Text("Hoặc"),
-            ),
-            Container(
-              height: 30,
-              width: 190,
-              child: const Divider(
-                color: Colors.black,
-                height: 20,
-                thickness: 1,
-                indent: 10,
-                endIndent: 5,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void getLoadLocation({required String? province, required String? district}) {
+  Future<void> getLoadLocation({required String? province, required String? district}) async{
+    setState(() {
+      isLoading = true; // Bắt đầu quá trình tải, cập nhật UI
+    });
     dbRef = FirebaseDatabase.instance
         .ref("Location")
         .child(province!)
@@ -438,8 +371,60 @@ class _mapState extends State<map> {
     dataListLocal.clear();
     dbRef?.onValue.listen((event) {
       for (var snapshot in event.snapshot.children) {
-        dataListLocal.add({"location": snapshot.value});
+         dataListLocal.add({"location": snapshot.value});
       }
+      setState(() {
+        isLoading = false; // Bắt đầu quá trình tải, cập nhật UI
+      });
     });
   }
+
+  Widget getLocationFromGPS() {
+
+    return Center(
+      child: Container(
+        child: Column(
+          children: [
+            ElevatedButton(
+              onPressed: getCurrentLocation,
+              child: const Text("Find Location"),
+            ),
+            if (isLoading)
+              const CircularProgressIndicator() // Hiển thị loading spinner khi đang tải
+            else
+              Expanded(child: Text(currentLocationUser)),
+          ],
+        ),
+      ),
+    );
+  }
+  Future<void> getCurrentLocation()async{
+    setState(() {
+      isLoading = true; // Bật trạng thái loading
+    });
+    LocationPermission permission= await Geolocator.checkPermission();
+    if(permission == LocationPermission.denied||permission==LocationPermission.deniedForever){
+      LocationPermission ask = await Geolocator.requestPermission();
+    }else{
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      Fluttertoast.showToast(msg: "Latitude: ${position.latitude}, Longitude: ${position.longitude}");
+      String address = await getAddressFromLatLng(position.latitude, position.longitude);
+      Fluttertoast.showToast(msg: address);
+
+      setState(() {
+        currentLocationUser=address;
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<String> getAddressFromLatLng(double latitude, double longitude) async {
+    List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+    if (placemarks.isNotEmpty) {
+      Placemark place = placemarks.first;
+      return "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
+    }
+    return "No address available";
+  }
+
 }

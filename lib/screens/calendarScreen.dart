@@ -3,7 +3,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-
 import '../Auth/Login.dart';
 
 class Calendar extends StatefulWidget {
@@ -20,9 +19,9 @@ class _CalendarState extends State<Calendar> {
   late final Map<dynamic, dynamic> invoiceData;
   DatabaseReference? dbRef;
   bool isLoadIdUser = true;
-  late Map<dynamic, dynamic> invoice = {};
-
   late List<DateTime> highlightedDays = [];
+  final DateTime today = DateTime.now();
+  int t = 0;
 
   @override
   void initState() {
@@ -34,8 +33,6 @@ class _CalendarState extends State<Calendar> {
     await loadData();
   }
 
-  final DateTime today = DateTime.now();
-
   @override
   Widget build(BuildContext context) {
     // if (highlightedDays.isEmpty) {
@@ -46,13 +43,17 @@ class _CalendarState extends State<Calendar> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
-        title: Text("Lịch dùng thuốc",style: TextStyle(color: Colors.white,fontSize: 25,fontWeight: FontWeight.w700),),
+        title: const Text(
+          "Lịch dùng thuốc",
+          style: TextStyle(
+              color: Colors.white, fontSize: 25, fontWeight: FontWeight.w700),
+        ),
       ),
       body: SfCalendar(
         view: CalendarView.month,
         monthCellBuilder: (BuildContext context, MonthCellDetails details) {
           final bool isHighlighted = highlightedDays.any((day) =>
-          day.year == details.date.year &&
+              day.year == details.date.year &&
               day.month == details.date.month &&
               day.day == details.date.day);
           final bool isToday = details.date.year == today.year &&
@@ -64,7 +65,8 @@ class _CalendarState extends State<Calendar> {
               color: isHighlighted
                   ? Colors.blue.withOpacity(0.5)
                   : Colors.transparent,
-              border: Border.all(color: Colors.green.withOpacity(0.9), width: 0.2),
+              border:
+                  Border.all(color: Colors.green.withOpacity(0.9), width: 0.2),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -73,8 +75,10 @@ class _CalendarState extends State<Calendar> {
               children: <Widget>[
                 if (isToday)
                   CircleAvatar(
-                    backgroundColor: Colors.red.withOpacity(0.6), // Màu viền của ngày hôm nay
-                    radius: 15, // Đặt kích thước của CircleAvatar
+                    backgroundColor: Colors.red.withOpacity(0.6),
+                    // Màu viền của ngày hôm nay
+                    radius: 15,
+                    // Đặt kích thước của CircleAvatar
                     child: Text(
                       details.date.day.toString(),
                       style: const TextStyle(color: Colors.white),
@@ -105,19 +109,29 @@ class _CalendarState extends State<Calendar> {
   }
 
   List<DateTime> getHighlightedDays(List<String> days) {
-    debugPrint("days ${days.toString()}");
-    DateTime today = DateTime.now();
+    DateTime x = DateTime.now();
+    DateTime today = DateTime(x.year, x.month, x.day);
     List<DateTime> highlightedDays = [];
-    for (String day in days) {
-      debugPrint("day $day");
-      int numday= int.parse(day);
-      DateTime date = DateTime(today.year, today.month, numday);
-      if (date.isAtSameMomentAs(today) || date.isAfter(today)) {
-        highlightedDays.add(date);
-      }
 
+    for (String day in days) {
+      int numDay = int.parse(day);
+      DateTime date = DateTime(today.year, today.month, numDay);
+      highlightedDays.add(date);
     }
     return highlightedDays;
+  }
+
+  void filterOutPastDays() {
+    DateTime today = DateTime.now();
+    today = DateTime(
+        today.year, today.month, today.day); // Chỉ xét đến năm, tháng, ngày
+    if (mounted) {
+      setState(() {
+        highlightedDays = highlightedDays
+            .where((day) => day.isAtSameMomentAs(today) || day.isAfter(today))
+            .toList();
+      });
+    }
   }
 
   Future<void> loadData() async {
@@ -126,20 +140,29 @@ class _CalendarState extends State<Calendar> {
     dbRef?.onValue.listen((event) {
       dataList.clear();
       for (var snapshot in event.snapshot.children) {
+        var dayValue = snapshot.child('Day').value;
+        if (dayValue == null) {
+          continue;
+        }
         String dayStr = snapshot.child('Day').value.toString();
         dayStr = dayStr.replaceAll('[', '').replaceAll(']', '');
         List<String> dayList = dayStr.split(', ');
-        setState(() {
-          highlightedDays = getHighlightedDays(dayList);
-        });
+        if (mounted) {
+          setState(() {
+            highlightedDays = getHighlightedDays(dayList);
+            filterOutPastDays();
+          });
+        }
       }
     });
 
     if (id.isNotEmpty) {
-      setState(() {
-        idUser = id;
-        isLoadIdUser = false;
-      });
+      if (mounted) {
+        setState(() {
+          idUser = id;
+          isLoadIdUser = false;
+        });
+      }
     } else {
       Fluttertoast.showToast(msg: 'Lỗi xác thực vui lòng đăng nhập');
     }
@@ -153,7 +176,7 @@ class _CalendarState extends State<Calendar> {
       Fluttertoast.showToast(msg: 'Vui lòng đăng nhập để tiếp tục');
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const Login()),
-              (Route<dynamic> route) => false);
+          (Route<dynamic> route) => false);
       return Future.error('User not logged in');
     }
   }

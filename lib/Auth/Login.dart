@@ -239,7 +239,8 @@ class _LoginState extends State<Login>
                     shadowColor: Colors.black.withOpacity(0.5),
                     elevation: 20),
                 label: const Text('Login',
-                    style: TextStyle(color: Colors.white, fontSize: 20))));
+                    style: TextStyle(color: Colors.white, fontSize: 20)))
+        );
     }
 
     _goToSignup(BuildContext context) => Navigator.push(
