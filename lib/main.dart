@@ -19,8 +19,8 @@ void main()async
             home: SafeArea(
                 child: Scaffold(
                     resizeToAvoidBottomInset: false,
-                    body: NavigationMenu(index: 0,))),
-                    // body: Splash())),
+                    // body: NavigationMenu(index: 0,))),
+                    body: Splash())),
             debugShowCheckedModeBanner: false));
 }
 

@@ -228,16 +228,9 @@ class _SignUpState extends State<SignUp>
                     setState(()
                         {
                             name= _nameUser.text;
-                            Fluttertoast.showToast(msg: name);
-
                             email=_email.text;
-                            Fluttertoast.showToast(msg: email);
-
                             password=_password.text;
-                            Fluttertoast.showToast(msg: password);
-
                             passwordAgain=_passwordAgain.text;
-                            Fluttertoast.showToast(msg: passwordAgain);
                         });
                     registration();
                 },
