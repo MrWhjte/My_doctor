@@ -51,7 +51,7 @@ class _EditAccountScreenState extends State<EditAccountScreen>
                 leading: IconButton(
                     onPressed: ()
                     {
-                      Navigator.pop(context);
+                      goto();
                     },
                     icon: const Icon(Icons.arrow_back_ios_outlined)
                 ),
@@ -243,7 +243,7 @@ void goto(){
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) =>  const NavigationMenu(index: 4,),
+      builder: (context) =>  const NavigationMenu(index: 2,),
     ),
   );
 }

@@ -198,7 +198,12 @@ class _AccountScreenState extends State<AccountScreen> {
         imageAvatar = snapshot.child('Avatar').value.toString();
       });
     } else {
-      Fluttertoast.showToast(msg: "No data found.");
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const EditAccountScreen(),
+        ),
+      );
     }
   }
 

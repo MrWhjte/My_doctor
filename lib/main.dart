@@ -6,21 +6,25 @@ import 'Auth/Login.dart';
 import 'Auth/Reset_pass.dart';
 import 'Auth/signUp.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'Main_Function/firebase_service.dart';
+import 'Main_Function/notifications.dart';
 import 'firebase_options.dart';
 import 'package:my_doctor/Main_Function/ScansScreen.dart';
 
 void main()async
 {
     WidgetsFlutterBinding.ensureInitialized();
+
     await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
     );
+    NotificationHelper.init();
     runApp( const GetMaterialApp(
             home: SafeArea(
                 child: Scaffold(
                     resizeToAvoidBottomInset: false,
-                    // body: NavigationMenu(index: 0,))),
-                    body: Splash())),
+                    body: NavigationMenu(index: 0,))),
+                    // body: Splash())),
             debugShowCheckedModeBanner: false));
 }
 

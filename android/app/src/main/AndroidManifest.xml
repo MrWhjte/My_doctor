@@ -1,10 +1,13 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <application
         android:label="my_doctor"
         android:name="${applicationName}"
@@ -35,5 +38,34 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <receiver  android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
+            tools:ignore="MissingClass" />
+        <receiver  android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
+            android:exported="true"
+            tools:ignore="MissingClass">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
+            </intent-filter>
+        </receiver>
+        <!-- Provide required visibility configuration for API level 30 and above -->
+<!--        <queries>-->
+<!--            &lt;!&ndash; If your app checks for SMS support &ndash;&gt;-->
+<!--            <intent>-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+<!--                <data android:scheme="sms" />-->
+<!--            </intent>-->
+<!--            &lt;!&ndash; If your app checks for call support &ndash;&gt;-->
+<!--            <intent>-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+<!--                <data android:scheme="tel" />-->
+<!--            </intent>-->
+<!--            &lt;!&ndash; If your application checks for inAppBrowserView launch mode support &ndash;&gt;-->
+<!--            <intent>-->
+<!--                <action android:name="android.support.customtabs.action.CustomTabsService" />-->
+<!--            </intent>-->
+<!--        </queries>-->
     </application>
 </manifest>

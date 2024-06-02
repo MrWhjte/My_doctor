@@ -1,14 +1,12 @@
 import 'dart:convert';
-
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:location/location.dart' as LocationPlugin;
+import 'package:geocoding/geocoding.dart' as GeocodingPlugin;
+
 import 'package:url_launcher/url_launcher.dart';
 
 class map extends StatefulWidget {
@@ -20,19 +18,26 @@ class map extends StatefulWidget {
 
 class _mapState extends State<map> {
   late List<Map<String, dynamic>> dataListLocal = [];
+  late List<Map<String, dynamic>> dataListGps = [];
   DatabaseReference? dbRef;
   bool isLoading = false;
+  bool isLoadingGps = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     initAsync();
+    _getCurrentLocation();
   }
 
   Future<void> initAsync() async {
     await loadData();
   }
+
+  LocationPlugin.LocationData? _currentPosition;
+  String _currentAddress = '';
+  LocationPlugin.Location location = LocationPlugin.Location();
 
   String? selectedProvince;
   String? selectedDistrict;
@@ -132,7 +137,7 @@ class _mapState extends State<map> {
   Widget tabContent() {
     switch (current) {
       case 0:
-        return find();
+        return findLocations();
       case 1:
         return getLocationFromGPS();
       default:
@@ -172,7 +177,7 @@ class _mapState extends State<map> {
                           itemBuilder: (context, index) {
                             return Padding(
                               padding: EdgeInsets.only(
-                                  left: index == 0 ? 20 : 90, top: 7),
+                                  left: index == 0 ? 20 : 80, top: 7),
                               child: GestureDetector(
                                 onTap: () {
                                   setState(() {
@@ -232,13 +237,15 @@ class _mapState extends State<map> {
             child: InkWell(
                 onTap: () async {
                   final encodedLocation = Uri.encodeComponent(location);
-                  final googleMapsUrl = 'comgooglemaps://?center=$encodedLocation&zoom=14';
+                  final googleMapsUrl =
+                      'comgooglemaps://?center=$encodedLocation&zoom=14';
                   if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
-                  await launchUrl(Uri.parse(googleMapsUrl));
-                  return; // Exit the onTap function if Google Maps opens
+                    await launchUrl(Uri.parse(googleMapsUrl));
+                    return; // Exit the onTap function if Google Maps opens
                   }
                   // Fallback to web map if Google Maps app is unavailable
-                  final webMapUrl = 'https://www.google.com/maps/search/?api=1&query=$encodedLocation';
+                  final webMapUrl =
+                      'https://www.google.com/maps/search/?api=1&query=$encodedLocation';
                   await launchUrl(Uri.parse(webMapUrl));
                 },
                 child: Padding(
@@ -257,11 +264,11 @@ class _mapState extends State<map> {
                         ])))));
   }
 
-  Widget find() {
+  Widget findLocations() {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 16,right: 16,top: 30),
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 30),
           child: Column(
             children: [
               DropdownButtonFormField<String>(
@@ -309,7 +316,7 @@ class _mapState extends State<map> {
                   setState(() {
                     selectedDistrict = newValue;
                     getLoadLocation(
-                        province: selectedProvince, district: newValue);
+                        province: selectedProvince, district: selectedDistrict);
                   });
                 },
                 items: district.map<DropdownMenuItem<String>>((String value) {
@@ -327,40 +334,43 @@ class _mapState extends State<map> {
         ),
         Expanded(
           child: isLoading
-              ? const Center(child: CircularProgressIndicator()) // Hiển thị spinner khi đang tải
-              :  dbRef == null || selectedDistrict == null
               ? const Center(
-                  child: Text(
-                    "Chọn địa chỉ để hiện thị vị trí",
-                    style: TextStyle(color: Colors.red, fontSize: 20),
-                  ),
-                )
-              : dataListLocal.isEmpty
+                  child:
+                      CircularProgressIndicator()) // Hiển thị spinner khi đang tải
+              : dbRef == null || selectedDistrict == null
                   ? const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Text(
-                          "Xin lỗi hiện tại không có nhà thuốc ở địa điểm này",
-                          style: TextStyle(color: Colors.red, fontSize: 23),
-                          textAlign: TextAlign.center,
-                        ),
+                      child: Text(
+                        "Chọn địa chỉ để hiện thị vị trí",
+                        style: TextStyle(color: Colors.red, fontSize: 20),
                       ),
                     )
-                  : FirebaseAnimatedList(
-                      query: dbRef!,
-                      itemBuilder: (context, snapshot, animation, index) {
-                        // Bây giờ không cần kiểm tra dbRef nữa, chỉ kiểm tra dataListLocal
-                        return Padding(
-                            padding: const EdgeInsets.only(top: 5.0),
-                            child:
-                                loadLocation(dataListLocal[index]['location']));
-                      }),
+                  : dataListLocal.isEmpty
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(20),
+                            child: Text(
+                              "Xin lỗi hiện tại không có nhà thuốc ở địa điểm này",
+                              style: TextStyle(color: Colors.red, fontSize: 23),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
+                      : FirebaseAnimatedList(
+                          query: dbRef!,
+                          itemBuilder: (context, snapshot, animation, index) {
+                            // Bây giờ không cần kiểm tra dbRef nữa, chỉ kiểm tra dataListLocal
+                            return Padding(
+                                padding: const EdgeInsets.only(top: 5.0),
+                                child: loadLocation(
+                                    dataListLocal[index]['location']));
+                          }),
         )
       ],
     );
   }
 
-  Future<void> getLoadLocation({required String? province, required String? district}) async{
+  Future<void> getLoadLocation(
+      {required String? province, required String? district}) async {
     setState(() {
       isLoading = true; // Bắt đầu quá trình tải, cập nhật UI
     });
@@ -371,60 +381,123 @@ class _mapState extends State<map> {
     dataListLocal.clear();
     dbRef?.onValue.listen((event) {
       for (var snapshot in event.snapshot.children) {
-         dataListLocal.add({"location": snapshot.value});
+        dataListLocal.add({"location": snapshot.value});
       }
       setState(() {
-        isLoading = false; // Bắt đầu quá trình tải, cập nhật UI
+        isLoading = false; // tải hoàn tất
+      });
+    });
+  }
+
+  Future<void> getLoadLocationGps(
+      {required String? province, required String? district}) async {
+    setState(() {
+      isLoadingGps = true; // Bắt đầu quá trình tải, cập nhật UI
+    });
+    dbRef = FirebaseDatabase.instance
+        .ref("Location")
+        .child(province!)
+        .child(district!);
+    dataListGps.clear();
+    dbRef?.onValue.listen((event) {
+      for (var snapshot in event.snapshot.children) {
+        dataListGps.add({"location": snapshot.value});
+      }
+      setState(() {
+        isLoadingGps = false; // Bắt đầu quá trình tải, cập nhật UI
       });
     });
   }
 
   Widget getLocationFromGPS() {
-
     return Center(
-      child: Container(
-        child: Column(
-          children: [
-            ElevatedButton(
-              onPressed: getCurrentLocation,
-              child: const Text("Find Location"),
-            ),
-            if (isLoading)
-              const CircularProgressIndicator() // Hiển thị loading spinner khi đang tải
-            else
-              Expanded(child: Text(currentLocationUser)),
-          ],
-        ),
+      child: Column(
+        children: [
+          if (isLoadingGps)
+            const CircularProgressIndicator() // Hiển thị loading spinner khi đang tải
+          else
+          Expanded(
+            child: isLoadingGps
+                ? const Center(
+                child:
+                CircularProgressIndicator()) // Hiển thị spinner khi đang tải
+                : dataListGps.isEmpty
+                ? const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      "Xin lỗi hiện tại không có nhà thuốc ở địa điểm này",
+                      style: TextStyle(color: Colors.red, fontSize: 23),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )
+                : FirebaseAnimatedList(
+                query: dbRef!,
+                itemBuilder: (context, snapshot, animation, index) {
+                  // Bây giờ không cần kiểm tra dbRef nữa, chỉ kiểm tra dataListLocal
+                  return Padding(
+                      padding: const EdgeInsets.only(top: 5.0),
+                      child: loadLocation(
+                          dataListGps[index]['location']));
+                }),
+          )
+        ],
       ),
     );
   }
-  Future<void> getCurrentLocation()async{
-    setState(() {
-      isLoading = true; // Bật trạng thái loading
-    });
-    LocationPermission permission= await Geolocator.checkPermission();
-    if(permission == LocationPermission.denied||permission==LocationPermission.deniedForever){
-      LocationPermission ask = await Geolocator.requestPermission();
-    }else{
-      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      Fluttertoast.showToast(msg: "Latitude: ${position.latitude}, Longitude: ${position.longitude}");
-      String address = await getAddressFromLatLng(position.latitude, position.longitude);
-      Fluttertoast.showToast(msg: address);
 
+  _checkPermissions() async {
+    bool serviceEnabled;
+    LocationPlugin.PermissionStatus permissionGranted;
+
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        return;
+      }
+    }
+
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == LocationPlugin.PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != LocationPlugin.PermissionStatus.granted) {
+        return;
+      }
+    }
+  }
+
+  _getCurrentLocation() async {
+    _checkPermissions();
+    try {
+      LocationPlugin.LocationData locationData = await location.getLocation();
       setState(() {
-        currentLocationUser=address;
-        isLoading = false;
+        _currentPosition = locationData;
       });
+
+      _getAddressFromLatLng(locationData.latitude!, locationData.longitude!);
+    } catch (e) {
+      debugPrint("Error: $e");
     }
   }
 
-  Future<String> getAddressFromLatLng(double latitude, double longitude) async {
-    List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
-    if (placemarks.isNotEmpty) {
-      Placemark place = placemarks.first;
-      return "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
+  _getAddressFromLatLng(double latitude, double longitude) async {
+    try {
+      List<GeocodingPlugin.Placemark> placeMarks =
+          await GeocodingPlugin.placemarkFromCoordinates(latitude, longitude);
+      GeocodingPlugin.Placemark place = placeMarks[0];
+      //subAdministrativeArea: tên quận
+      //administrativeArea: tên tp
+      setState(() {
+        _currentAddress =
+            "${place.administrativeArea}, ${place.subAdministrativeArea},";
+      });
+      getLoadLocationGps(
+          province: place.administrativeArea,
+          district: place.subAdministrativeArea);
+    } catch (e) {
+      debugPrint("Error: $e");
     }
-    return "No address available";
   }
-
 }

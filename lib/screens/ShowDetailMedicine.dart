@@ -20,6 +20,7 @@ class _ShowDetailMedicineState extends State<ShowDetailMedicine> {
   String? idUser;
   String lieu='';
   String timeUse='';
+  String note='';
   String? idHoaDon;
   String time="";
   final FirebaseAuth auth = FirebaseAuth.instance;
@@ -42,13 +43,23 @@ class _ShowDetailMedicineState extends State<ShowDetailMedicine> {
 
   @override
   Widget build(BuildContext context) {
-    time = invoiceData['timeUp'];
-    timeUse = invoiceData['TimeUse'];
-    lieu = invoiceData['lieu'];
-    lieu.isEmpty?"":lieu;
+    if(invoiceData.isNotEmpty){
+      time = invoiceData['timeUp'];
+      timeUse = invoiceData['TimeUse'];
+      lieu = invoiceData['lieu'];
+      note=invoiceData['Note'];
+    }
+
+
+    debugPrint(lieu.toString());
+    lieu.isEmpty?'0':lieu;
+
     DateTime dateTime = DateTime.parse(time);
+    DateTime dateTimeUse = DateTime.parse(timeUse);
     String formattedDateTime =
         DateFormat('dd-MM-yyyy – hh:mm a').format(dateTime);
+    String  formattedDateTimeUse=
+        DateFormat('dd-MM-yyyy').format(dateTimeUse);
     return Scaffold(
         appBar: AppBar(
             title: const Text(
@@ -101,27 +112,47 @@ class _ShowDetailMedicineState extends State<ShowDetailMedicine> {
                         const TextStyle(color: Colors.black,
                             fontWeight: FontWeight.w500,
                             fontSize: 20),),
-                      Text("Thời gian quét: $formattedDateTime",
+                      Text("Ngày tải lên: $formattedDateTime",
                           style:
                           const TextStyle(color: Colors.black,
                               fontWeight: FontWeight.w500,
                               fontSize: 20)),
-                      Text("Thời gian sử dụng: $timeUse",
+                      Text("Ngày bắt đầu dùng: $formattedDateTimeUse",
                           style:
                           const TextStyle(color: Colors.black,
                               fontWeight: FontWeight.w500,
                               fontSize: 20)),
-                      const Text("Số lượng thuốc đã ghi nhận",
-                          style:
-                          TextStyle(color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 20)),
+                      const Center(
+                        child: Text("Thông tin đơn thuốc",
+                            style:
+                            TextStyle(color: Colors.blue,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 25)),
+                      ),
                        Text("Số lượng liều thuốc: $lieu",
                           style:
                           const TextStyle(color: Colors.black,
                               fontWeight: FontWeight.w500,
                               fontSize: 20)),
-                      Expanded(child: showText())
+                      Expanded(
+                        flex: 2,
+                          child: showText()),
+                       Row(
+                         children: [
+                           const Text("Ghi chú: ",
+                              style:
+                              TextStyle(color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 20)),
+                           Text(note,
+                              style:
+                              const TextStyle(color: Colors.black,
+                                  fontSize: 20)),
+                         ],
+                       ),
+                      Expanded(
+                        flex: 1,
+                          child: Container()),
                     ],
                   ),
                 ) : const Center(child: CircularProgressIndicator()),
@@ -152,12 +183,12 @@ class _ShowDetailMedicineState extends State<ShowDetailMedicine> {
                                           style: const TextStyle(fontSize: 20)
                                       ),
                                     ),
-                                InkWell(
-                                    onTap: () {
-                                      Fluttertoast.showToast(msg: "${medicines[index]} ");
-                                    },
-                                    child: const Icon(Icons.search)
-                                )
+                                // InkWell(
+                                //     onTap: () {
+                                //       Fluttertoast.showToast(msg: "${medicines[index]} ");
+                                //     },
+                                //     child: const Icon(Icons.search)
+                                // )
                               ]
                           )
                       ),
@@ -223,23 +254,12 @@ class _ShowDetailMedicineState extends State<ShowDetailMedicine> {
       setState(() {
         invoiceData = snapshot.value as Map<dynamic, dynamic>;
         medicines = parseMedicineList(invoiceData["name"]);
-        debugPrint(medicines.toString());
       });
     } else {
       Fluttertoast.showToast(msg: "No data found.");
     }
   }
 
-  // List<String> parseMedicineList(List<Object?> inputList) {
-  //   List<String> validMedicines = [];
-  //
-  //   for (var item in inputList) {
-  //     if (item != null && item is String && item.toLowerCase() != 'null') {
-  //       validMedicines.add(item.trim());
-  //     }
-  //   }
-  //   return validMedicines;
-  // }
   List<Map<String, dynamic>> parseMedicineList(Map<dynamic, dynamic> inputMap) {
     List<Map<String, dynamic>> medicines = [];
     inputMap.forEach((key, value) {
@@ -247,7 +267,7 @@ class _ShowDetailMedicineState extends State<ShowDetailMedicine> {
         Map<String, dynamic> medicineDetails = {
           'name': key,
           'use': value['use'] ?? '',
-          'time': value['timeUp'] ?? ''
+          'time': value['time'] ?? ''
         };
         medicines.add(medicineDetails);
       }

@@ -205,8 +205,6 @@ class _SettingState extends State<Setting> {
         yourName = snapshot.child("Name").value.toString();
         imageAvatar = snapshot.child("Avatar").value.toString();
       });
-    } else {
-      Fluttertoast.showToast(msg: "No data found.");
     }
   }
 

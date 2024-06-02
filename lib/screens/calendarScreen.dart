@@ -41,10 +41,6 @@ class _CalendarState extends State<Calendar> {
 
   @override
   Widget build(BuildContext context) {
-    // if (highlightedDays.isEmpty) {
-    //   // Hiển thị loader hoặc thông báo trong khi dữ liệu đang được tải
-    //   return const Center(child: CircularProgressIndicator());
-    // }
     return Scaffold(
 
       appBar: AppBar(
@@ -168,24 +164,34 @@ class _CalendarState extends State<Calendar> {
       }
     }
 
-    List<DateTime> getHighlightedDays(List<String> days) {
-      DateTime x = DateTime.now();
-      DateTime today = DateTime(x.year, x.month, x.day);
-      List<DateTime> highlightedDays = [];
+  List<DateTime> getHighlightedDays(List<String> days) {
+    DateTime now = DateTime.now();
+    int currentMonth = now.month;
+    int currentYear = now.year;
 
-      for (String day in days) {
-        try {
-          int numDay = int.parse(day);
-          DateTime date = DateTime(today.year, today.month, numDay);
-          highlightedDays.add(date);
-        } catch (e) {
-          debugPrint('Lỗi khi chuyển đổi day: "$day". Exception: $e');
+    List<DateTime> highlightedDays = [];
+
+    for (String day in days) {
+      try {
+        int numDay = int.parse(day);
+        if (highlightedDays.isNotEmpty && numDay < highlightedDays.last.day) {
+          currentMonth++;
+          if (currentMonth > 12) {
+            currentMonth = 1;
+            currentYear++;
+          }
         }
+        DateTime date = DateTime(currentYear, currentMonth, numDay);
+        highlightedDays.add(date);
+      } catch (e) {
+        debugPrint('Lỗi khi chuyển đổi day: "$day". Exception: $e');
       }
-      return highlightedDays;
     }
+    return highlightedDays;
+  }
 
-    Future<String> getUserID() async {
+
+  Future<String> getUserID() async {
       final User? user = auth.currentUser;
       if (user != null) {
         return user.uid;

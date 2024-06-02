@@ -142,7 +142,7 @@ class _ScheduleState extends State<Schedule> {
             child: Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                "Đặt giờ nhận thông báo",
+                "Chọn giờ nhắc nhở",
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 20,
@@ -151,8 +151,8 @@ class _ScheduleState extends State<Schedule> {
             ),
           ),
            Wrap(
-              spacing: 20, // Khoảng cách ngang giữa các chips
-              runSpacing: 8.0, // Khoảng cách dọc giữa các hàng chips
+              spacing: 10, // Khoảng cách ngang giữa các chips
+              runSpacing: 9.0, // Khoảng cách dọc giữa các hàng chips
               children: List<Widget>.generate(
                 optionTime.length,
                 (int index) {

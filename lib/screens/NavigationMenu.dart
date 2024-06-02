@@ -31,7 +31,7 @@ class _NavigationMenuState extends State<NavigationMenu>
     @override
     Widget build(BuildContext context)
     {
-      List<Widget> screens=const [HomeScreen(), Calendar(),ScansScreen(),Medicine(),Setting()];
+      List<Widget> screens=const [HomeScreen(),ScansScreen(),Setting()];
         return PopScope(
           canPop: false,
           onPopInvoked: (bool didPop) async {
@@ -64,17 +64,14 @@ class _NavigationMenuState extends State<NavigationMenu>
                           icon: Icon(Icons.home_filled),
                           label: "Home"
                       ),
-                      BottomNavigationBarItem(
-                          icon: Icon(Icons.calendar_month_outlined),
-                          label: "Schedule"
-                      ), BottomNavigationBarItem(
+                       BottomNavigationBarItem(
                           icon: Icon(Icons.qr_code_scanner_sharp),
                           label: "Scans"
                       ),
-                      BottomNavigationBarItem(
-                          icon: Icon(Icons.perm_identity),
-                          label: "Medical"
-                      ),
+                      // BottomNavigationBarItem(
+                      //     icon: Icon(Icons.perm_identity),
+                      //     label: "Medical"
+                      // ),
                       BottomNavigationBarItem(
                           icon: Icon(Icons.settings),
                           label: "Setting"

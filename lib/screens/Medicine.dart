@@ -39,30 +39,32 @@ class _MedicineState extends State<Medicine> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton:
+      FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                    const NavigationMenu(index: 1)));
+          },
+          child: const Icon(Icons.qr_code_scanner_sharp)),
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Colors.blueAccent,
+          title: const Text(
+            "Your Medicine",
+            style: TextStyle(
+                color: Colors.white, fontSize: 25, fontWeight: FontWeight.w700),
+          ),
+        ),
         body: isLoadIdUser
             ? const Center(child: CircularProgressIndicator())
             : Padding(
-                padding: const EdgeInsets.only(top: 30.0, left: 20, right: 20),
+                padding: const EdgeInsets.only(top: 10.0, left: 20, right: 20),
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text("Your Medicine",
-                                style: TextStyle(
-                                    fontSize: 30, fontWeight: FontWeight.bold)),
-                            InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const NavigationMenu(index: 2)));
-                                },
-                                child: const Icon(Icons.qr_code_scanner_sharp,
-                                    size: 40, color: Colors.blue))
-                          ]),
                       const SizedBox(height: 10),
                       Expanded(
                           child: FirebaseAnimatedList(
@@ -127,8 +129,6 @@ class _MedicineState extends State<Medicine> {
         });
       }
       _sortDataList(dataList);
-      // setState(
-      //     () {}); // Cập nhật giao diện người dùng sau khi dữ liệu đã được sắp xếp
     });
     if (id.isNotEmpty) {
       setState(() {
