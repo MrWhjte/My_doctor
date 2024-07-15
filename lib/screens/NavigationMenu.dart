@@ -62,11 +62,11 @@ class _NavigationMenuState extends State<NavigationMenu>
                   items: const [
                       BottomNavigationBarItem(
                           icon: Icon(Icons.home_filled),
-                          label: "Home"
+                          label: "Trang chủ"
                       ),
                        BottomNavigationBarItem(
                           icon: Icon(Icons.qr_code_scanner_sharp),
-                          label: "Scans"
+                          label: "Quét"
                       ),
                       // BottomNavigationBarItem(
                       //     icon: Icon(Icons.perm_identity),
@@ -74,7 +74,7 @@ class _NavigationMenuState extends State<NavigationMenu>
                       // ),
                       BottomNavigationBarItem(
                           icon: Icon(Icons.settings),
-                          label: "Setting"
+                          label: "Cài đặt"
                       )
                   ]
               )
@@ -87,16 +87,16 @@ class _NavigationMenuState extends State<NavigationMenu>
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Exit app ?'),
-            content: const Text('Do you want to close app!'),
+            title: const Text('Thoát'),
+            content: const Text('Bạn đang muốn rời khỏi ứng dụng'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('No'),
+                child: const Text('Quay lại'),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Yes'),
+                child: const Text('Thoát'),
               ),
             ],
           );

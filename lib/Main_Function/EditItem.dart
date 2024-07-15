@@ -22,7 +22,8 @@ class EditItem extends StatelessWidget {
             style: const TextStyle(
               fontSize: 18,
               color: Colors.black,
-            ),
+            ),textAlign: TextAlign.center,
+
           ),
         ),
         const SizedBox(width: 20),

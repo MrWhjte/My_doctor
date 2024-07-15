@@ -21,7 +21,7 @@ class NotificationHelper {
   static Future<void> scheduleNotifications(List<String> days, String timeStrings)
   async {
     String title = 'Thông báo';
-    String body = 'đã đến giờ uống thuốc';
+    String body = 'Đã đến giờ uống thuốc';
     if(days.isNotEmpty && timeStrings!=''){
       List<TimeOfDay> times = _parseTimeString(timeStrings);
       DateTime now = DateTime.now();

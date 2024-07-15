@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import '../Auth/Login.dart';
@@ -23,6 +25,7 @@ class _MedicineState extends State<Medicine> {
   late final Map<dynamic, dynamic> invoiceData;
   DatabaseReference? dbRef;
   bool isLoadIdUser = true;
+  bool checkIsNotData = true;
   late Map<dynamic, dynamic> invoice = {};
 
   @override
@@ -39,44 +42,65 @@ class _MedicineState extends State<Medicine> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton:
-      FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                    const NavigationMenu(index: 1)));
-          },
-          child: const Icon(Icons.qr_code_scanner_sharp)),
+        floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const NavigationMenu(index: 1)));
+            },
+            child: const Icon(Icons.qr_code_scanner_sharp)),
         appBar: AppBar(
           centerTitle: true,
           backgroundColor: Colors.blueAccent,
           title: const Text(
-            "Your Medicine",
+            "Đơn thuốc của bạn",
             style: TextStyle(
                 color: Colors.white, fontSize: 25, fontWeight: FontWeight.w700),
           ),
         ),
-        body: isLoadIdUser
-            ? const Center(child: CircularProgressIndicator())
-            : Padding(
-                padding: const EdgeInsets.only(top: 10.0, left: 20, right: 20),
+        body: checkIsNotData
+            ? Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
                 child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 10),
-                      Expanded(
-                          child: FirebaseAnimatedList(
-                              query: dbRef!,
-                              itemBuilder:
-                                  (context, snapshot, animation, index) {
-                                return Padding(
-                                    padding: const EdgeInsets.only(top: 5.0),
-                                    child: card(dataList[index]["id"],
-                                        dataList[index]["time"].toString()));
-                              }))
-                    ])));
+                  children: [
+                    Expanded(
+                        flex: 1, child: Image.asset('assets/images/empty.png')),
+                    const Expanded(
+                        flex: 1,
+                        child: Text(
+                          'Đơn thuốc của bạn trống ',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                             ),
+                        )),
+                  ],
+                ),
+              )
+            : isLoadIdUser
+                ? const Center(child: CircularProgressIndicator())
+                : Padding(
+                    padding:
+                        const EdgeInsets.only(top: 10.0, left: 20, right: 20),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 10),
+                          Expanded(
+                              child: FirebaseAnimatedList(
+                                  query: dbRef!,
+                                  itemBuilder:
+                                      (context, snapshot, animation, index) {
+                                    return Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 5.0),
+                                        child: card(
+                                            dataList[index]["id"],
+                                            dataList[index]["time"]
+                                                .toString()));
+                                  }))
+                        ])));
   }
 
   Widget card(String id, String time) {
@@ -129,7 +153,11 @@ class _MedicineState extends State<Medicine> {
         });
       }
       _sortDataList(dataList);
+      if (dataList.isNotEmpty) {
+        checkIsNotData = false;
+      }
     });
+    // có ID
     if (id.isNotEmpty) {
       setState(() {
         dataList.clear();

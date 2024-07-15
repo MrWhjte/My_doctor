@@ -413,35 +413,45 @@ class _mapState extends State<map> {
     return Center(
       child: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Text(
+              "Vị trí hiện tại: $_currentAddress",
+              style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700),
+            ),
+          ),
           if (isLoadingGps)
             const CircularProgressIndicator() // Hiển thị loading spinner khi đang tải
           else
-          Expanded(
-            child: isLoadingGps
-                ? const Center(
-                child:
-                CircularProgressIndicator()) // Hiển thị spinner khi đang tải
-                : dataListGps.isEmpty
-                ? const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Text(
-                      "Xin lỗi hiện tại không có nhà thuốc ở địa điểm này",
-                      style: TextStyle(color: Colors.red, fontSize: 23),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                )
-                : FirebaseAnimatedList(
-                query: dbRef!,
-                itemBuilder: (context, snapshot, animation, index) {
-                  // Bây giờ không cần kiểm tra dbRef nữa, chỉ kiểm tra dataListLocal
-                  return Padding(
-                      padding: const EdgeInsets.only(top: 5.0),
-                      child: loadLocation(
-                          dataListGps[index]['location']));
-                }),
-          )
+            Expanded(
+              child: isLoadingGps
+                  ? const Center(
+                      child:
+                          CircularProgressIndicator()) // Hiển thị spinner khi đang tải
+                  : dataListGps.isEmpty
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(20),
+                            child: Text(
+                              "Xin lỗi hiện tại không có nhà thuốc ở địa điểm này",
+                              style: TextStyle(color: Colors.red, fontSize: 23),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
+                      : FirebaseAnimatedList(
+                          query: dbRef!,
+                          itemBuilder: (context, snapshot, animation, index) {
+                            // Bây giờ không cần kiểm tra dbRef nữa, chỉ kiểm tra dataListLocal
+                            return Padding(
+                                padding: const EdgeInsets.only(top: 5.0),
+                                child: loadLocation(
+                                    dataListGps[index]['location']));
+                          }),
+            )
         ],
       ),
     );
@@ -489,13 +499,12 @@ class _mapState extends State<map> {
       GeocodingPlugin.Placemark place = placeMarks[0];
       //subAdministrativeArea: tên quận
       //administrativeArea: tên tp
+      String t = "Thành phố " "${place.administrativeArea}";
       setState(() {
-        _currentAddress =
-            "${place.administrativeArea}, ${place.subAdministrativeArea},";
+        _currentAddress = "$t, ${place.subAdministrativeArea},";
       });
-      getLoadLocationGps(
-          province: place.administrativeArea,
-          district: place.subAdministrativeArea);
+
+      getLoadLocationGps(province: t, district: place.subAdministrativeArea);
     } catch (e) {
       debugPrint("Error: $e");
     }

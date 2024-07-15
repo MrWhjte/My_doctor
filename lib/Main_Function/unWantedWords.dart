@@ -22,7 +22,13 @@ const List<String> unwantedWords = [
   "Pham",
   "Sang",
   "chieu",
+  "chieu1",
+  "534",
   "vien",
   "Sau",
-  "Viên"
+  "Điểm",
+  "Viên",
+  "DIEM",
+  "giaThanh",
+
 ];

@@ -28,7 +28,7 @@ class _SignUpState extends State<SignUp>
     {
         if (password.isEmpty ||  name.isEmpty || email.isEmpty ||passwordAgain.isEmpty)
         {
-            Fluttertoast.showToast(msg:'vui long nhap email và mat khau');
+            Fluttertoast.showToast(msg:'Vui lòng nhập email và nhập khẩu');
         }else {
             try {
                 await FirebaseAuth.instance
@@ -88,7 +88,7 @@ class _SignUpState extends State<SignUp>
                         child: Column(
                             children: [
                                 const SizedBox(height: 20),
-                                const Text('SignUp',
+                                const Text('Đăng Ký',
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 50,
@@ -141,7 +141,7 @@ class _SignUpState extends State<SignUp>
             obscureText: true,
             decoration: const InputDecoration(
                 suffixIcon: Icon(Icons.remove_red_eye),
-                labelText: 'Password', border: OutlineInputBorder()));
+                labelText: 'Mật khẩu', border: OutlineInputBorder()));
     }
 
     Widget _inputPassAgain()
@@ -161,7 +161,7 @@ class _SignUpState extends State<SignUp>
             obscureText: true,
             decoration: const InputDecoration(
                 suffixIcon: Icon(Icons.remove_red_eye),
-                labelText: 'input password again', border: OutlineInputBorder()));
+                labelText: 'Nhập lại mật khẩu', border: OutlineInputBorder()));
     }
 
     Widget _inputAccount()
@@ -179,7 +179,7 @@ class _SignUpState extends State<SignUp>
             controller: _email,
             style: const TextStyle(color: Colors.white, fontSize: 15),
             decoration: const InputDecoration(
-                labelText: 'Account', border: OutlineInputBorder()));
+                labelText: 'Tài khoản', border: OutlineInputBorder()));
     }
     Widget _inputNameUser()
     {
@@ -196,7 +196,7 @@ class _SignUpState extends State<SignUp>
             controller: _nameUser,
             style: const TextStyle(color: Colors.white, fontSize: 15),
             decoration: const InputDecoration(
-                labelText: 'Name', border: OutlineInputBorder()));
+                labelText: 'Tên', border: OutlineInputBorder()));
     }
 
     Widget _signUpText()
@@ -205,12 +205,12 @@ class _SignUpState extends State<SignUp>
         Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-                const Text("I have an account? ",
+                const Text("Tôi đã có tài khoản ",
                     style: TextStyle(fontSize: 15, color: Colors.white)),
                 InkWell(
                     onTap: () => _goToLogIn(context),
                     child: const Text(
-                        "Login", style: TextStyle(color: Colors.red, fontSize: 15))
+                        "Đăng nhập", style: TextStyle(color: Colors.red, fontSize: 15))
                 )
             ]
         );
@@ -243,7 +243,7 @@ class _SignUpState extends State<SignUp>
                         borderRadius: BorderRadius.circular(50)),
                     shadowColor: Colors.black.withOpacity(0.5),
                     elevation: 20),
-                label: const Text('SignUp',
+                label: const Text('Đăng ký',
                     style: TextStyle(
                         color: Colors.white, fontSize: 20)
                 )

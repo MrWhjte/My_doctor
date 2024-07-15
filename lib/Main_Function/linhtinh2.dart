@@ -1,104 +1,100 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:location/location.dart' as LocationPlugin;
-import 'package:geocoding/geocoding.dart' as GeocodingPlugin;
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:my_doctor/Auth/Login.dart';
+import 'package:my_doctor/Main_Function/ScansScreen.dart';
+import 'package:page_transition/page_transition.dart';
 
-void main() => runApp(MyApp());
+class Splash extends StatefulWidget {
+  const Splash({super.key});
 
-class MyApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: HomeScreen(),
-    );
-  }
+  State<Splash> createState() => _SplashState();
 }
 
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  LocationPlugin.LocationData? _currentPosition;
-  String _currentAddress = '';
-  LocationPlugin.Location location = LocationPlugin.Location();
+class _SplashState extends State<Splash> {
+  double _opacity = 0;
+  bool _showBtn = false;
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-    _checkPermissions();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _startFadeIn());
   }
 
-  _checkPermissions() async {
-    bool _serviceEnabled;
-    LocationPlugin.PermissionStatus _permissionGranted;
+  void _startFadeIn() {
+    setState(() {
+      _opacity = 1;
+    });
+    Future.delayed(const Duration(seconds: 2), () async {
+      await Navigator.push(
+          context,
+          PageTransition(
+              child: const Login(),
+              type: PageTransitionType.fade));
 
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return;
-      }
-    }
-
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == LocationPlugin.PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != LocationPlugin.PermissionStatus.granted) {
-        return;
-      }
-    }
-  }
-
-  _getCurrentLocation() async {
-    try {
-      LocationPlugin.LocationData locationData = await location.getLocation();
-      setState(() {
-        _currentPosition = locationData;
-      });
-
-      _getAddressFromLatLng(locationData.latitude!, locationData.longitude!);
-    } catch (e) {
-      print("Error: $e");
-    }
-  }
-
-  _getAddressFromLatLng(double latitude, double longitude) async {
-    try {
-      List<GeocodingPlugin.Placemark> placemarks = await GeocodingPlugin.placemarkFromCoordinates(latitude, longitude);
-      GeocodingPlugin.Placemark place = placemarks[0];
-
-      setState(() {
-        _currentAddress =
-        "${place.locality}, ${place.postalCode}, ${place.country}";
-      });
-    } catch (e) {
-      print("Error: $e");
-    }
+      // Get.to(
+      //       () => const Login(),
+      //   transition: Transition.zoom,
+      //   duration: const Duration(milliseconds: 500),
+      // );
+      // setState(() {
+      //   _showBtn = true; //show button when splash show
+      // });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Location Example'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            if (_currentPosition != null)
-              Text(
-                  "LAT: ${_currentPosition?.latitude}, LNG: ${_currentPosition?.longitude}"),
-            if (_currentAddress.isNotEmpty)
-              Text("Address: $_currentAddress"),
-            ElevatedButton(
-              onPressed: _getCurrentLocation,
-              child: Text("Get Location"),
-            ),
-          ],
-        ),
-      ),
-    );
+        body: Stack(children: [
+          Container(
+              width: double.infinity,
+              color: const Color(0xFF53CCD1),
+              child: AnimatedOpacity(
+                  opacity: _opacity,
+                  duration: const Duration(seconds: 3),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset('assets/images/logo.png',
+                            width: 200, height: 200),
+                      ]))),
+          // if (_showBtn)
+          //   Align(
+          //       alignment: Alignment.bottomCenter,
+          //       child: Padding(
+          //         padding: const EdgeInsets.only(bottom: 20),
+          //         // Kho?ng cách t? ?áy
+          //         child: GestureDetector(
+          //           onTap: () {
+          //             Get.to(
+          //               () => const Login(),
+          //               transition: Transition.zoom,
+          //               duration: const Duration(milliseconds: 500),
+          //             );
+          //           },
+          //           child: Container(
+          //             padding:
+          //                 const EdgeInsets.symmetric(horizontal: 150, vertical: 20),
+          //             decoration: BoxDecoration(
+          //               color: const Color(0xFF76EEA3),
+          //               borderRadius: BorderRadius.circular(50),
+          //             ),
+          //             child: const Text(
+          //               "Next",
+          //               style: TextStyle(
+          //                 fontWeight: FontWeight.bold,
+          //                 fontSize: 20,
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //       ))
+        ]));
   }
 }

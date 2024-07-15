@@ -22,7 +22,7 @@ class _SettingState extends State<Setting> {
   bool isLoading = true;
   String? idUser;
   String email = "";
-  String yourName = "Your Name";
+  String yourName = "Chưa đặt tên";
   late String imageAvatar = "";
 
   @override
@@ -47,7 +47,7 @@ class _SettingState extends State<Setting> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "Settings",
+                "Cài đặt",
                 style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
@@ -55,7 +55,7 @@ class _SettingState extends State<Setting> {
               ),
               const SizedBox(height: 40),
               const Text(
-                "Account",
+                "Tài Khoản",
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w500,
@@ -92,7 +92,7 @@ class _SettingState extends State<Setting> {
                         ),
                         const SizedBox(height: 10),
                         const Text(
-                          "change your profile",
+                          "Bấm để thay đổi thông tin",
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
@@ -116,32 +116,32 @@ class _SettingState extends State<Setting> {
               ),
               const SizedBox(height: 40),
               const Text(
-                "Settings",
+                "Khác",
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 20),
+              // SettingItem(
+              //   title: "Language",
+              //   icon: Icons.language,
+              //   bgColor: Colors.orange.shade100,
+              //   iconColor: Colors.orange,
+              //   value: "English",
+              //   onTap: () {},
+              // ),
+              // const SizedBox(height: 20),
+              // SettingItem(
+              //   title: "Notifications",
+              //   icon: Icons.notifications,
+              //   bgColor: Colors.blue.shade100,
+              //   iconColor: Colors.blue,
+              //   onTap: () {},
+              // ),
+              // const SizedBox(height: 20),
               SettingItem(
-                title: "Language",
-                icon: Icons.language,
-                bgColor: Colors.orange.shade100,
-                iconColor: Colors.orange,
-                value: "English",
-                onTap: () {},
-              ),
-              const SizedBox(height: 20),
-              SettingItem(
-                title: "Notifications",
-                icon: Icons.notifications,
-                bgColor: Colors.blue.shade100,
-                iconColor: Colors.blue,
-                onTap: () {},
-              ),
-              const SizedBox(height: 20),
-              SettingItem(
-                title: "Help",
+                title: "Trợ giúp",
                 icon: Icons.help,
                 bgColor: Colors.red.shade100,
                 iconColor: Colors.red,
@@ -149,7 +149,7 @@ class _SettingState extends State<Setting> {
               ),
               const SizedBox(height: 20),
               SettingItem(
-                title: "Logout",
+                title: "Đăng xuất",
                 icon: Icons.logout,
                 bgColor: Colors.purple.shade100,
                 iconColor: Colors.black,

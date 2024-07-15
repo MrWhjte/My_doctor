@@ -7,6 +7,7 @@ class Helper {
     String result = _removeUnwantedWords(_getBoxText(input));
     return result;
   }
+  // input là văn bản thô được lấy từ OCR
   List<String> getListNameProduct(String input) {
     String result = _removeUnwantedWords(_getBoxText(input));
     List<String> nameSplit = splitProduct(result);
@@ -14,10 +15,10 @@ class Helper {
   }
 
   String _getBoxText(String input) {
-     String head = 'Tên ';
+    String head = 'Tên ';
     String end = 'Tong ';
-    int openParenthesisIndex = _findClosestMatch(input, head, head.length);
-    int closeParenthesisIndex = _findClosestMatch(input, end, end.length);
+    int openParenthesisIndex = _findClosestMatch(input, head, head.length);//  vt bắt đầu của từ Ten trong input
+    int closeParenthesisIndex = _findClosestMatch(input, end, end.length); //  vt từ bắt ầu từ Tong trong input
 
     if (openParenthesisIndex != -1 && closeParenthesisIndex != -1) {
       String textInParentheses = input.substring(
@@ -59,16 +60,19 @@ class Helper {
       }
     }
     return v1[t.length];
+    // trả về giá trị cuối cùng
   }
-
-  int _findClosestMatch(String rssString, String target, int chunkSize) {
-    int minDistance = target.length; // Giả định khoảng cách lớn nhất có thể
+//chunkSize đồ dài chữ cần tìm
+  int _findClosestMatch(String stringOcr, String target, int chunkSize) {
+    int minDistance = target.length;
     String closestMatch = "";
     int closestIndex = -1;
 
     // Duyệt qua chuỗi lớn, lấy từng phần để so sánh
-    for (int i = 0; i < rssString.length - chunkSize; i++) {
-      String chunk = rssString.substring(i, i + chunkSize);
+    for (int i = 0; i < stringOcr.length - chunkSize; i++) {
+      // cắt chuỗi thành các đoạn có độ dài là từ cần tìm
+      String chunk = stringOcr.substring(i, i + chunkSize);
+      // tìm từ gần giống với từ cần tìm từ chuỗi đã cắt bên trên
       int distance = _levenshtein(chunk, target);
 
       if (distance < minDistance) {
@@ -81,7 +85,8 @@ class Helper {
   }
 
   String _removeUnwantedWords(String input) {
-    List<String> words = input.split(' ');
+    //input là khoảng từ đã được xác định
+    List<String> words = input.split(' ');// tách input thành từng từ
     List<String> resultWords = [];
     for (String word in words) {
       bool isUnwanted = false;

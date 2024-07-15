@@ -77,7 +77,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                                 const SizedBox(height: 40),
-                                const Text('Reset PassWord',
+                                const Text('Đặt lại mật khẩu',
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 40,
@@ -90,7 +90,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
                                 const SizedBox(height: 10),
                                 _signUpText(),
                                 const SizedBox(height: 10),
-                                const Text('Or Login with',style: TextStyle(color: Colors.white,fontSize: 18)),
+                                const Text('Hoặc đăng nhập với',style: TextStyle(color: Colors.white,fontSize: 15)),
                                 const SizedBox(height: 10),
                                 _anotherLogin()
                             ]
@@ -132,7 +132,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
             controller: _email,
             style: const TextStyle(color: Colors.white, fontSize: 15),
             decoration: const InputDecoration(
-                labelText: 'Account', border: OutlineInputBorder()));
+                labelText: 'Nhập tài khoản', border: OutlineInputBorder()));
     }
 
     Widget _btnRsPass()
@@ -160,7 +160,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
                         borderRadius: BorderRadius.circular(50)),
                     shadowColor: Colors.black.withOpacity(0.5),
                     elevation: 20),
-                label: const Text('Send email reset',
+                label: const Text('Gửi email đặt mật khẩu',
                     style: TextStyle(
                         color: Colors.white, fontSize: 20)
                 )
@@ -178,12 +178,12 @@ class _ForgotPasswordState extends State<ForgotPassword>
         Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text("I remembered my password ",
-                  style: TextStyle(fontSize: 15, color: Colors.white)),
+              const Text("Tôi đã nhớ mật khẩu ",
+                  style: TextStyle(fontSize: 18, color: Colors.white)),
               InkWell(
                   onTap: () => _goToLogIn(context),
                   child: const Text(
-                      "Login", style: TextStyle(color: Colors.red, fontSize: 15))
+                      "đăng nhập", style: TextStyle(color: Colors.red, fontSize: 18))
               )
             ]
         );

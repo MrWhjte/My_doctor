@@ -3,7 +3,9 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:my_doctor/Auth/Login.dart';
@@ -59,12 +61,11 @@ class _ScansScreenState extends State<ScansScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: true,
-        floatingActionButton:
-          FloatingActionButton(
-              onPressed: () {
-                _getImagesCamera();
-              },
-              child: const Icon(Icons.camera)),
+        floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              _getImagesCamera();
+            },
+            child: const Icon(Icons.camera)),
         body: SingleChildScrollView(
           child: Container(
               padding: const EdgeInsets.only(top: 20, right: 5, left: 5),
@@ -95,7 +96,7 @@ class _ScansScreenState extends State<ScansScreen> {
                                           size: 30, color: Colors.white))))
                         ])),
                 Container(
-                    padding: const EdgeInsets.only(top: 5, right: 10, left: 10),
+                    padding: const EdgeInsets.only( right: 10, left: 10),
                     child: Card(
                         color: Colors.grey,
                         margin: const EdgeInsets.all(10),
@@ -132,7 +133,13 @@ class _ScansScreenState extends State<ScansScreen> {
                       checkImage
                           ? _extractTextView()
                           : getImage != null
-                              ? const Center(child: CircularProgressIndicator())
+                              ? Center(
+                                  child: SizedBox(
+                                    width: 200,
+                                      height: 200,
+                                      child: Image.asset(
+                                          'assets/images/scan.gif')),
+                                )
                               : Text(
                                   'Chọn hoá đơn để quét',
                                   style: TextStyle(
@@ -209,7 +216,7 @@ class _ScansScreenState extends State<ScansScreen> {
                         builder: (BuildContext context) {
                           return Wrap(children: [
                             const Padding(
-                              padding: EdgeInsets.only(top: 18.0),
+                              padding: EdgeInsets.only(top: 18),
                               child: Center(
                                 child: Text(
                                   "Nhập số liều ",
@@ -239,8 +246,10 @@ class _ScansScreenState extends State<ScansScreen> {
                                       onPressed: () {
                                         if (mounted) {
                                           setState(() {
-                                            lieuThuoc =
-                                                numLieuChangeController.text.isEmpty?'0':numLieuChangeController.text;
+                                            lieuThuoc = numLieuChangeController
+                                                    .text.isEmpty
+                                                ? '0'
+                                                : numLieuChangeController.text;
                                           });
                                         }
                                         Navigator.of(context).pop();
@@ -318,56 +327,58 @@ class _ScansScreenState extends State<ScansScreen> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(3),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Danh sách thuốc: ",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 20,
+               Padding(
+                padding: const EdgeInsets.all(3),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Danh sách thuốc: ",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                      ),
                     ),
-                  ),
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          _addNewProduct();
-                        },
-                        child: const Icon(
-                          Icons.add_circle_outline,
-                          size: 30,
-                          color: Colors.green,
+                    Row(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            _addNewProduct();
+                          },
+                          child: const Icon(
+                            Icons.add_circle_outline,
+                            size: 30,
+                            color: Colors.green,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      InkWell(
-                        onTap: () {
-                          _showBottomSheet(context);
-                        },
-                        child: Icon(
-                          Icons.alarm,
-                          size: 30,
-                          color: tagSession.isNotEmpty || tagSession.isNotEmpty
-                              ? Colors.green
-                              : Colors.grey,
+                        const SizedBox(width: 10),
+                        InkWell(
+                          onTap: () {
+                            _showBottomSheet(context);
+                          },
+                          child: Icon(
+                            Icons.alarm,
+                            size: 30,
+                            color: tagSession.isNotEmpty || tagSession.isNotEmpty
+                                ? Colors.green
+                                : Colors.grey,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
+
+
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: _listNameProduct.length,
               itemBuilder: (context, index) {
                 return Container(
-                  padding: const EdgeInsets.only(right: 15, left: 15),
+                  padding: const EdgeInsets.only(right: 11, left: 11),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -463,12 +474,14 @@ class _ScansScreenState extends State<ScansScreen> {
                 );
               },
             ),
-          const SizedBox(height: 15,),
+            const SizedBox(
+              height: 15,
+            ),
             Visibility(
               visible: _isVisible,
-                child: const Padding(
-                  padding: EdgeInsets.all(0),
-                  child: Align(
+              child: const Padding(
+                padding: EdgeInsets.all(0),
+                child: Align(
                   alignment: Alignment.topLeft,
                   child: Text(
                     "Ghi chú",
@@ -478,25 +491,25 @@ class _ScansScreenState extends State<ScansScreen> {
                       fontSize: 20,
                     ),
                   ),
-                              ),
-                ),
-              ),
-          Visibility(
-            visible: _isVisible,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 8.0,right: 5,left: 5),
-              child: TextFormField(
-                controller: _noteController,
-                maxLines: null, // Cho phép ghi chú nhiều dòng
-                decoration: InputDecoration(
-                  hintText: 'Nhập nội dung ghi chú ở đây...',
-                  border: OutlineInputBorder(), // Tạo viền cho TextFormField
-                  filled: true, // Làm cho TextFormField có màu nền
-                  fillColor: Colors.grey[200], // Màu nền
                 ),
               ),
             ),
-          )
+            Visibility(
+              visible: _isVisible,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0, right: 5, left: 5),
+                child: TextFormField(
+                  controller: _noteController,
+                  maxLines: null, // Cho phép ghi chú nhiều dòng
+                  decoration: InputDecoration(
+                    hintText: 'Nhập nội dung ghi chú ở đây...',
+                    border: OutlineInputBorder(), // Tạo viền cho TextFormField
+                    filled: true, // Làm cho TextFormField có màu nền
+                    fillColor: Colors.grey[200], // Màu nền
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),
@@ -522,23 +535,25 @@ class _ScansScreenState extends State<ScansScreen> {
       List<String>? tags1 = selectedTags['tagSession'];
       List<String>? tags2 = selectedTags['tagTime'];
       List<String>? time = selectedTags['timeStartUse'];
-        if (mounted) {
-
-          setState(() {
-              notification = true;
-              tagTime = tags2.toString();
-              tagSession = tags1.toString();
-              getTimeFromCalender = time.toString();
-              _timeList = List.generate(_listNameProduct.length, (index) => tags1.toString());
-          });
-        }
+      if (mounted) {
+        setState(() {
+          notification = true;
+          tagTime = tags2.toString();
+          tagSession = tags1.toString();
+          getTimeFromCalender = time.toString();
+          _timeList = List.generate(
+              _listNameProduct.length, (index) => tags1.toString());
+        });
+      }
     }
   }
+
   void _toggleVisibility() {
     setState(() {
       _isVisible = !_isVisible;
     });
   }
+
   void _showBottomSheetOnName(BuildContext context, int index) async {
     final selectedTags = await showModalBottomSheet<Map<String, List<String>>>(
       shape: const RoundedRectangleBorder(
@@ -555,8 +570,12 @@ class _ScansScreenState extends State<ScansScreen> {
       List<String>? tags2 = selectedTags['tagUse'];
       if (mounted) {
         setState(() {
-          tags1!.isEmpty?_timeList[index]: _timeList[index] = tags1.toString();
-          tags2!.isEmpty?_usageList[index] = 'không có': _usageList[index] = tags2.toString();
+          tags1!.isEmpty
+              ? _timeList[index]
+              : _timeList[index] = tags1.toString();
+          tags2!.isEmpty
+              ? _usageList[index] = 'không có'
+              : _usageList[index] = tags2.toString();
         });
       }
     }
@@ -565,7 +584,7 @@ class _ScansScreenState extends State<ScansScreen> {
   void _addNewProduct() {
     if (mounted) {
       setState(() {
-        int newIndex = _listNameProduct.length +1;
+        int newIndex = _listNameProduct.length + 1;
         _listNameProduct.add("Product $newIndex"); // Add new product
         _usageList.add('không có');
         _timeList.add('không có');
@@ -596,6 +615,9 @@ class _ScansScreenState extends State<ScansScreen> {
 
     String lieuThuocx = Helper().getLieuThuoc(text);
     String name = Helper().getNameUser(text);
+    if(name=='null'){
+      name = "Không có";
+    }
     List<String> listNameProduct = Helper().getListNameProduct(text);
     if (mounted) {
       setState(() {
@@ -628,7 +650,7 @@ class _ScansScreenState extends State<ScansScreen> {
           getImage = null;
         });
       }
-      Fluttertoast.showToast(msg: 'No image selected.');
+      Fluttertoast.showToast(msg: 'Không có ảnh được chọn.');
     }
   }
 
@@ -657,6 +679,7 @@ class _ScansScreenState extends State<ScansScreen> {
         style: TextStyle(color: Colors.black, fontSize: fontSize));
   }
 
+  /// tải data lên fb
   Future<void> _upLoadData(List<String> medicineList) async {
     if (medicineList.isEmpty) {
       if (mounted) {
@@ -664,6 +687,40 @@ class _ScansScreenState extends State<ScansScreen> {
       }
       return;
     }
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          backgroundColor: Colors.white,
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 60,
+                  height: 60,
+                  child: Image.asset('assets/images/load_2.gif'),
+                ),
+                const SizedBox(width: 20),
+                const Text(
+                  "Đang lưu dữ liệu...",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+try{
     String idUser = await getUserID();
     String emailUser = await getUserEmail();
     if (idUser.isEmpty || emailUser.isEmpty) {
@@ -673,10 +730,19 @@ class _ScansScreenState extends State<ScansScreen> {
     var invoiceRef = databaseReference.child("Invoices");
     var time = DateTime.now().toString();
     var id = generateIdWithPrefix(5);
-    var soLieuThuoc = lieuThuoc == '0' ? 0 : lieuThuoc;
+    var soLieuThuoc = lieuThuoc == '0' ? '3' : lieuThuoc.toString();
 
     getTimeFromCalenderUp =
         getTimeFromCalender.replaceAll('[', '').replaceAll(']', '');
+
+    String imageUrl = "";
+    if (getImage != null) {
+      imageUrl = await uploadImageToFirebaseStorage(getImage!,id);
+      if (imageUrl.isEmpty) {
+        Fluttertoast.showToast(msg: 'Đã xảy ra lỗi trong quá trình lưu ảnh vui lòng thử lại');
+        return;
+      }
+    }
 
     Map<String, dynamic> invoiceData = {
       'tagTime': tagTime,
@@ -687,6 +753,7 @@ class _ScansScreenState extends State<ScansScreen> {
       'lieu': soLieuThuoc,
       'TimeUse':getTimeFromCalenderUp,
       'Note' :_noteController.text.isEmpty?'Không có':_noteController.text,
+      'invoiceImage':imageUrl,
     };
 
     for (int i = 0; i < medicineList.length; i++) {
@@ -709,15 +776,23 @@ class _ScansScreenState extends State<ScansScreen> {
         nameUser = "";
       });
     }
-    Fluttertoast.showToast(msg: 'Lưu thành công');
+    Fluttertoast.showToast(msg: 'Thành công');
+  } finally{
+  Navigator.of(context).pop();
   }
-//                solieuthuoc    sobuoiuong        idus
+  }
+
+//            solieuthuoc    sobuoiuong        idus
   _upLoadDay(String numStr, int tagSession, String id) async {
     DatabaseReference databaseReference = FirebaseDatabase.instance.ref(id);
     var invoiceRef = databaseReference.child("Day");
+    var invoiceRefDayMonth = databaseReference.child("DayMonth");
+
     double number = double.parse(numStr);
-    int num = (number / tagSession).ceil();
+    int num = (number / tagSession)
+        .ceil(); // tính số ngày dựa trên số liều và số buổi
     List<String> days = [];
+    List<String> dayMonth = [];
     DateTime today = DateTime(
       DateTime.now().year,
       DateTime.now().month,
@@ -731,13 +806,18 @@ class _ScansScreenState extends State<ScansScreen> {
       if (today == selectTime) {
         DateTime nextDay = today.add(Duration(days: i));
         days.add(nextDay.day.toString());
+        dayMonth.add(
+            "${nextDay.day.toString().padLeft(2, '0')}/${nextDay.month.toString().padLeft(2, '0')}");
       } else {
         DateTime nextDay = selectTime.add(Duration(days: i));
         days.add(nextDay.day.toString());
+        dayMonth.add(
+            "${nextDay.day.toString().padLeft(2, '0')}/${nextDay.month.toString().padLeft(2, '0')}");
       }
     }
-    invoiceRef.set(days.toString());
-    NotificationHelper.scheduleNotifications(days,tagTime);
+    await invoiceRef.set(days.toString());
+    await invoiceRefDayMonth.set(dayMonth.toString());
+    NotificationHelper.scheduleNotifications(days, tagTime);
   }
 
   Future<String> getUserID() async {
@@ -769,6 +849,20 @@ class _ScansScreenState extends State<ScansScreen> {
       id += random.nextInt(10).toString();
     }
     return id;
+  }
+
+  Future<String> uploadImageToFirebaseStorage(File imageFile, String id) async {
+    String idUser = await getUserID();
+    if (idUser.isEmpty) {
+      Fluttertoast.showToast(msg: 'Have error');
+    }
+    final userProfileImageRef = FirebaseStorage.instance
+        .ref(idUser)
+        .child('InvoiceImage')
+        .child('$id.jpg');
+    await userProfileImageRef.putFile(imageFile);
+    final imageUrl = await userProfileImageRef.getDownloadURL();
+    return imageUrl;
   }
 
   @override

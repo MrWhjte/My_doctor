@@ -24,7 +24,7 @@ class _AccountScreenState extends State<AccountScreen> {
   bool isLoading = true;
   String? idUser;
   String email = "";
-  late String imageAvatar = "";
+  late String _imageAvatar = "";
   final _nameController = TextEditingController();
   final _genderController = TextEditingController();
   final _ageController = TextEditingController();
@@ -91,20 +91,20 @@ class _AccountScreenState extends State<AccountScreen> {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Text("Account",
+                          const Text("Thông tin cá nhân",
                               style: TextStyle(
                                   fontSize: 36, fontWeight: FontWeight.bold)),
                           const SizedBox(height: 40),
                           Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                imageAvatar.isNotEmpty
+                                _imageAvatar.isNotEmpty
                                     ? SizedBox(
                                         height: 100,
                                         width: 100,
                                         child: ClipOval(
                                           child: Image.network(
-                                            imageAvatar,
+                                            _imageAvatar,
                                             fit: BoxFit
                                                 .cover, // Cover the entire area
                                           ),
@@ -115,14 +115,14 @@ class _AccountScreenState extends State<AccountScreen> {
                                         height: 100, width: 100),
                               ]),
                           EditItem(
-                              title: "Name",
+                              title: "Tên",
                               widget: TextFormField(
                                 controller: _nameController,
                                 enabled: false,
                               )),
                           const SizedBox(height: 40),
                           EditItem(
-                              title: "Gender",
+                              title: "Giới tính",
                               widget: TextFormField(
                                 controller: _genderController,
                                 enabled: false,
@@ -133,7 +133,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 controller: _ageController,
                                 enabled: false,
                               ),
-                              title: "Age"),
+                              title: "Tuổi"),
                           const SizedBox(height: 20),
                           EditItem(
                               widget: TextFormField(
@@ -147,7 +147,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                 controller: _phoneController,
                                 enabled: false,
                               ),
-                              title: "Phone")
+                              title: "Số điện thoại")
                         ]))));
   }
 
@@ -185,6 +185,8 @@ class _AccountScreenState extends State<AccountScreen> {
     }
     final snapshot = await ref!.get();
     if (snapshot.exists) {
+      String gen = snapshot.child("Gender").value.toString();
+
       setState(() {
         isLoading = false;
         // profile = snapshot.value as Map<dynamic, dynamic>;
@@ -193,9 +195,9 @@ class _AccountScreenState extends State<AccountScreen> {
                 ? snapshot.child('Name').value.toString()
                 : "Edit Account to show";
         _ageController.text = snapshot.child("Age").value.toString();
-        _genderController.text = snapshot.child("Gender").value.toString();
+        _genderController.text = gen == "man" ? "Nam" : "Nữ";
         _phoneController.text = snapshot.child("Phone").value.toString();
-        imageAvatar = snapshot.child('Avatar').value.toString();
+        _imageAvatar = snapshot.child('Avatar').value.toString();
       });
     } else {
       Navigator.push(

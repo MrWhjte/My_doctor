@@ -26,8 +26,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
   DatabaseReference? ref1;
   late String idUser;
   String test = '';
-  String dayNoti = '';
   bool isLoad = true;
+  bool isAlarm = true;
   bool checkData = true;
   bool status = false;
 
@@ -64,8 +64,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       fontSize: 35,
                       fontWeight: FontWeight.w700),
                 ),
-                Image.asset('assets/images/alarm.gif'),
-                checkData
+                isAlarm
+                    ? Image.asset('assets/images/alarmOn.gif')
+                    : Image.asset('assets/images/alarmOff.png'),
+                checkData //false thì có // true thì chưa
                     ? const Text(
                         'Bạn chưa đặt thông báo nào',
                         style: TextStyle(
@@ -76,11 +78,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     : Column(
                         children: [
                           const Text(
-                            'Bạn đã đặt lịch nhắc nhở vào lúc',
+                            'Bạn đã đặt lịch nhắc nhở uống thuốc vào lúc',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 24,
                                 fontWeight: FontWeight.w700),
+                            textAlign: TextAlign.center,
                           ),
                           isLoad
                               ? const Center(child: CircularProgressIndicator())
@@ -93,29 +96,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 ),
                         ],
                       ),
-                Column(
-                  children: [
-                    const Text(
-                      'Các ngày ',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 25,
-                          fontWeight: FontWeight.w700),
-                    ),
-                    isLoad?Container(): Text(
-                      dayNoti,
-                      style: const TextStyle(
-                          color: Colors.black45,
-                          fontSize: 25,
-                          fontWeight: FontWeight.w700),
-                    ),
-                  ],
+                const SizedBox(
+                  height: 10,
                 ),
-              const SizedBox(
-                height: 10,
-              ),
-              switchShow(),
-
+                switchShow(),
               ],
             ),
           ),
@@ -150,26 +134,19 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
   }
 
-  Future<void> getDay()async{
-    String id = await getUserID();
-    ref1 = FirebaseDatabase.instance.ref(id);
-    ref1?.onValue.listen((event) {
-      for (var snapshot in event.snapshot.children) {
-        var dayValue = snapshot
-            .child('Day')
-            .value;
-        if (dayValue == null) {
-          continue; // Bỏ qua nếu giá trị là null
-        }
-
-        String dayStr = dayValue.toString();
-        dayStr = dayStr.replaceAll('[', '').replaceAll(']', '');
-
-        setState(() {
-          dayNoti=dayStr;
-          dayList = dayStr.split(', ');
-        });
+  Future<void> getDay() async {
+    DatabaseReference refDay =
+        FirebaseDatabase.instance.ref(idUser).child('Day');
+    refDay.onValue.listen((event) {
+      var dayValue = event.snapshot.value;
+      if (dayValue == null) {
+        return; // Bỏ qua nếu giá trị là null
       }
+      String dayStr = dayValue.toString();
+      dayStr = dayStr.replaceAll('[', '').replaceAll(']', '');
+      setState(() {
+        dayList = dayStr.split(', ');
+      });
     });
   }
 
@@ -184,30 +161,25 @@ class _NotificationScreenState extends State<NotificationScreen> {
       for (var snapshot in event.snapshot.children) {
         dataList.add({
           'id': snapshot.key,
-          'time': DateTime.parse(snapshot
-              .child('timeUp')
-              .value
-              .toString())
+          'time': DateTime.parse(snapshot.child('timeUp').value.toString())
         });
       }
       _sortDataList(dataList);
-    });
-
-    if(dataList.isEmpty){
-      setState(() {
-        checkData=false;
-      });
-    }else{
-      setState(() {
-        checkData = true;
-        status = false;
-      });
-    }
-    Timer(const Duration(seconds: 1), () {
-      setState(() {
-        isLoad = false;
-        status = true;
-      });
+      if (dataList.isEmpty) {
+        setState(() {
+          checkData = true;
+          isLoad = true;
+          status = false;
+          isAlarm = false;
+        });
+      } else {
+        setState(() {
+          checkData = false;
+          status = true;
+          isLoad = false;
+          isAlarm = true;
+        });
+      }
     });
   }
 
@@ -234,7 +206,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
   void _sortDataList(List<Map<String, dynamic>> dataListTemp) {
     dataListTemp.sort((a, b) => b["time"].compareTo(a["time"]));
   }
-  Widget switchShow(){
+
+  Widget switchShow() {
     return FlutterSwitch(
       width: 200.0,
       height: 90.0,
@@ -263,14 +236,26 @@ class _NotificationScreenState extends State<NotificationScreen> {
         color: Color(0xFFF8E3A1),
       ),
       onToggle: (val) {
+        if (checkData) {
+          Fluttertoast.showToast(msg: 'Bạn chưa có đặt thông báo nào');
+          return;
+        }
         setState(() {
           status = val;
+
           if (val) {
-          Fluttertoast.showToast(msg: 'Đã bật thông báo');
-          NotificationHelper.scheduleNotifications(dayList,invoiceData['tagTime']);
+            Fluttertoast.showToast(msg: 'Đã bật thông báo');
+            NotificationHelper.scheduleNotifications(
+                dayList, invoiceData['tagTime']);
+            setState(() {
+              isAlarm = true;
+            });
           } else {
             Fluttertoast.showToast(msg: 'Đã tắt thông báo');
-            NotificationHelper.scheduleNotifications([],'');
+            NotificationHelper.scheduleNotifications([], '');
+            setState(() {
+              isAlarm = false;
+            });
           }
         });
       },

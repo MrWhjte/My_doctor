@@ -6,12 +6,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:my_doctor/FuncHomeScreen/Map.dart';
 import 'package:my_doctor/FuncHomeScreen/abc.dart';
-import 'package:my_doctor/Main_Function/Alarm_Screen.dart';
 import 'package:my_doctor/screens/Medicine.dart';
 import 'package:my_doctor/screens/Notification_Screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../Main_Function/linhtinh.dart';
+import 'BMI_screen.dart';
 import 'calendarScreen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -34,8 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'Lịch dùng thuốc',
     'Quản lý nhắc nhở',
     'Tra cứu nhà thuốc',
-    'Chỉ số BMI',
-    'Đơn thuốc đã lưu',
+    'Kiểm tra sức khoẻ',
   ];
   List imgData = [
     'assets/images/medicine.png',
@@ -43,7 +42,6 @@ class _HomeScreenState extends State<HomeScreen> {
     'assets/images/noti.png',
     'assets/images/location.png',
     'assets/images/bmi.png',
-    'assets/images/medicine.png',
   ];
   List<Icon> catIcon = const [
     Icon(Icons.category, color: Colors.blue, size: 50),
@@ -75,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           backgroundColor: Colors.red,
           onPressed: (){
-          launchUrl(Uri(scheme: 'tel',path: '114',));
+          launchUrl(Uri(scheme: 'tel',path: '115',));
           // FlutterPhoneDirectCaller.callNumber('114');
           },
           child: const Icon(Icons.call,color: Colors.white,),
@@ -107,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: const EdgeInsets.only(left: 3, bottom: 15),
                         child: Row(
                           children: [
-                            const Text('Hello ',
+                            const Text('Chào ',
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 30,
@@ -134,9 +132,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: TextFormField(
                             decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: "Search here...",
+                                hintText: "Tìm kiếm... ",
                                 hintStyle: TextStyle(
-                                    color: Colors.black.withOpacity(0.5),
+                                    color: Colors.black.withOpacity(0.3),
                                     fontWeight: FontWeight.w400,
                                     fontSize: 20),
                                 prefixIcon:
@@ -247,6 +245,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   void forwardCat(int key) {
     switch (key) {
+      case 0:
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const Medicine()));
+        break;
       case 1:
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const Calendar()));
@@ -259,9 +261,9 @@ class _HomeScreenState extends State<HomeScreen> {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const map()));
         break;
-        case 0:
+        case 4:
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const Medicine()));
+            context, MaterialPageRoute(builder: (context) => const BmiScreen()));
         break;
         case 5:
         Navigator.push(

@@ -84,7 +84,7 @@ class _EditAccountScreenState extends State<EditAccountScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                             const Text(
-                                "Edit Account",
+                                "Thay đổi thông tin",
                                 style: TextStyle(
                                     fontSize: 36,
                                     fontWeight: FontWeight.bold
@@ -92,7 +92,7 @@ class _EditAccountScreenState extends State<EditAccountScreen>
                             ),
                             const SizedBox(height: 40),
                             EditItem(
-                                title: "Photo",
+                                title: "Ảnh đại diện",
                                 widget: Column(
                                     children: [
                                         imageAvatar != null
@@ -120,18 +120,18 @@ class _EditAccountScreenState extends State<EditAccountScreen>
                                             style: TextButton.styleFrom(
                                                 foregroundColor: Colors.lightBlueAccent
                                             ),
-                                            child: const Text("Upload Image")
+                                            child: const Text("Chọn ảnh")
                                         )
                                     ]
                                 )
                             ),
                              EditItem(
-                                title: "Name",
+                                title: "Tên",
                                 widget: TextFormField(controller: _nameController,)
                             ),
                             const SizedBox(height: 40),
                             EditItem(
-                                title: "Gender",
+                                title: "Giới tính",
                                 widget: Row(
                                     children: [
                                         IconButton(
@@ -181,7 +181,7 @@ class _EditAccountScreenState extends State<EditAccountScreen>
                             const SizedBox(height: 20),
                              EditItem(
                                 widget: TextFormField(controller: _ageController,),
-                                title: "Age"
+                                title: "Tuổi"
                             ),
                             const SizedBox(height: 20),
                              EditItem(
@@ -191,7 +191,7 @@ class _EditAccountScreenState extends State<EditAccountScreen>
                           const SizedBox(height: 20),
                              EditItem(
                                 widget: TextFormField(controller: _phoneController,),
-                                title: "Phone"
+                                title: "Số điện thoại"
                             )
                         ]
                     )
