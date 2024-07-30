@@ -5,7 +5,7 @@
 
 ## Tổng quan
 
-Một ứng dụng cho phép người dùng trích xuất thông tin trên đơn thuốc bằng camera của thiết bị sau đó sử dụng công nghệ nhận diện văn bản để xử lý thông tin trên hoá đơn thuốc và sau đó lưu trữ nó vào cơ sở dữ liệu để quản lý.
+Một ứng dụng cho phép người dùng trích xuất các thông tin trên đơn thuốc bằng camera của thiết bị sau đó nhờ vào công nghệ nhận diện văn bản để xử lý thông tin trên đơn thuốc và sau đó lưu trữ nó vào cơ sở dữ liệu để quản lý
 
 ## Tính năng
 
